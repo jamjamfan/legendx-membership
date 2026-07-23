@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 222 47% 6%;
+    --foreground: 40 30% 96%;
+    --card: 222 44% 9%;
+    --card-foreground: 40 30% 96%;
+    --popover: 222 44% 9%;
+    --popover-foreground: 40 30% 96%;
+    --primary: 43 74% 52%;
+    --primary-foreground: 222 47% 8%;
+    --secondary: 222 30% 15%;
+    --secondary-foreground: 40 30% 96%;
+    --muted: 222 30% 14%;
+    --muted-foreground: 220 15% 65%;
+    --accent: 222 30% 16%;
+    --accent-foreground: 43 74% 60%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 222 24% 17%;
+    --input: 222 24% 20%;
+    --ring: 43 74% 52%;
+    --radius: 0.625rem;
+    --sidebar-background: 222 47% 7%;
+    --sidebar-foreground: 40 30% 96%;
+    --sidebar-primary: 43 74% 52%;
+    --sidebar-primary-foreground: 222 47% 8%;
+    --sidebar-accent: 222 30% 15%;
+    --sidebar-accent-foreground: 40 30% 96%;
+    --sidebar-border: 222 24% 17%;
+    --sidebar-ring: 43 74% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Noto Sans TC', ui-sans-serif, system-ui, -apple-system, 'PingFang TC',
+      'Microsoft JhengHei', sans-serif;
+  }
+  h1, h2, h3, .font-display {
+    font-family: 'Noto Serif TC', 'Noto Sans TC', serif;
+  }
+}
+
+@layer utilities {
+  .gold-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200;
+  }
+  .gold-border {
+    border-color: hsl(43 74% 52% / 0.35);
+  }
+}
