@@ -14,7 +14,7 @@ import type {
 import { getCourse, priceItems, totalOf, REBATE_SCHEDULE, slotsOf } from './courses'
 import { nextClassDate, parseCheckInPayload } from './reminders'
 
-const DB_KEY = 'legendx_db_v3'
+const DB_KEY = 'legendx_db_v4'
 const SESSION_KEY = 'legendx_session_v3'
 const DAY = 86400000
 const iso = (t: number) => new Date(t).toISOString()
@@ -35,21 +35,21 @@ function seedDB(): DB {
     { id: 'm_leung', name: '梁俊賢', phone: '98901234', email: 'leung@example.com', password: 'demo1234', referralCode: 'LEUNG88', referrerId: 'm_kay', referrerCode: 'KAY4455', stage: 1, promoViews: 0, createdAt: iso(now - 121 * DAY) },
   ]
   const sessions: CourseSession[] = [
-    { id: 's1', stage: 1, title: '第一階段 · 8月班', dates: ['2026-08-04', '2026-08-06', '2026-08-11'], time: '19:00–22:30', venue: '尖沙咀加連威老道 2–6 號愛賓商業大廈 12 樓全層', instructor: 'Kelvin Chan', capacity: 30 },
-    { id: 's2', stage: 1, title: '第一階段 · 9月班', dates: ['2026-09-01', '2026-09-03', '2026-09-08'], time: '19:00–22:30', venue: '尖沙咀加連威老道 2–6 號愛賓商業大廈 12 樓全層', instructor: 'Kelvin Chan', capacity: 30 },
-    { id: 's3', stage: 2, title: '第二階段 · 8月班', dates: [dateStr(now + 1 * DAY), dateStr(now + 8 * DAY), dateStr(now + 15 * DAY), dateStr(now + 22 * DAY)], time: '19:00–23:00', venue: '尖沙咀加連威老道 2–6 號愛賓商業大廈 12 樓全層', instructor: 'Kelvin Chan', capacity: 20 },
-    { id: 's4', stage: 3, title: '第三階段 · 2026 年度計劃', dates: ['2026-09-05'], time: '每月首個星期六 14:00–18:00 ＋ 線上跟進', venue: '尖沙咀教室（線下＋線上結合）', instructor: 'LegendX 導師團隊', capacity: 15 },
+    { id: 's1', stage: 1, title: '財技 3 班（星期五）', dates: ['2026-07-24', '2026-07-31', '2026-08-07'], time: '19:00–22:30', venue: '觀塘鴻圖道 33 號華盛數碼大廈 2303 室（港鐵牛頭角站 A 出口）', instructor: 'Yesir 鄭凱名 × James Sir', capacity: 30 },
+    { id: 's2', stage: 1, title: '財技 4 班（星期三）', dates: ['2026-08-05', '2026-08-12', '2026-08-19'], time: '19:00–22:30', venue: '觀塘鴻圖道 33 號華盛數碼大廈 2303 室（港鐵牛頭角站 A 出口）', instructor: 'Yesir 鄭凱名 × James Sir', capacity: 30 },
+    { id: 's3', stage: 2, title: '第二階段 · 8月班', dates: [dateStr(now + 1 * DAY), dateStr(now + 8 * DAY), dateStr(now + 15 * DAY), dateStr(now + 22 * DAY)], time: '19:00–23:00', venue: '觀塘鴻圖道 33 號華盛數碼大廈 2303 室', instructor: 'Yesir 鄭凱名 × James Sir', capacity: 20 },
+    { id: 's4', stage: 3, title: '第三階段 · 2026 年度計劃', dates: ['2026-09-05'], time: '每月首個星期六 14:00–18:00 ＋ 線上跟進', venue: '觀塘教室（線下＋線上結合）', instructor: 'LegendX 導師團隊', capacity: 15 },
   ]
   const orders: Order[] = [
     { id: 'o1', orderNo: 'LX26061001', memberId: 'm_demo', memberName: '陳大文', stage: 2, courseName: '第二階段 · 進階實戰班', amount: 6900, paymentMethod: 'card', status: 'paid', sessionId: 's3', sessionLabel: '第二階段 · 8月班', createdAt: iso(now - 43 * DAY), paidAt: iso(now - 43 * DAY) },
-    { id: 'o2', orderNo: 'LX26062002', memberId: 'm_may', memberName: '黃美玲', stage: 1, courseName: '第一階段 · 財商基礎班', amount: 880, paymentMethod: 'card', status: 'paid', usedReferralCode: 'GOLD8888', referrerMemberId: 'm_demo', sessionId: 's1', sessionLabel: '第一階段 · 8月班', createdAt: iso(now - 34 * DAY), paidAt: iso(now - 34 * DAY) },
-    { id: 'o3', orderNo: 'LX26070203', memberId: 'm_keung', memberName: '李志強', stage: 1, courseName: '第一階段 · 財商基礎班', amount: 880, paymentMethod: 'fps', status: 'paid', usedReferralCode: 'GOLD8888', referrerMemberId: 'm_demo', sessionId: 's1', sessionLabel: '第一階段 · 8月班', createdAt: iso(now - 22 * DAY), paidAt: iso(now - 21 * DAY) },
+    { id: 'o2', orderNo: 'LX26062002', memberId: 'm_may', memberName: '黃美玲', stage: 1, courseName: '第一階段 · 財技班', amount: 880, paymentMethod: 'card', status: 'paid', usedReferralCode: 'GOLD8888', referrerMemberId: 'm_demo', sessionId: 's1', sessionLabel: '財技 4 班（星期三）', createdAt: iso(now - 34 * DAY), paidAt: iso(now - 34 * DAY) },
+    { id: 'o3', orderNo: 'LX26070203', memberId: 'm_keung', memberName: '李志強', stage: 1, courseName: '第一階段 · 財技班', amount: 880, paymentMethod: 'fps', status: 'paid', usedReferralCode: 'GOLD8888', referrerMemberId: 'm_demo', sessionId: 's1', sessionLabel: '財技 4 班（星期三）', createdAt: iso(now - 22 * DAY), paidAt: iso(now - 21 * DAY) },
     { id: 'o4', orderNo: 'LX26011004', memberId: 'm_kay', memberName: '張家欣', stage: 2, courseName: '第二階段 · 進階實戰班', amount: 6900, paymentMethod: 'card', status: 'paid', createdAt: iso(now - 195 * DAY), paidAt: iso(now - 195 * DAY) },
     { id: 'o5', orderNo: 'LX26060105', memberId: 'm_kay', memberName: '張家欣', stage: 3, courseName: '第三階段 · 一年落地合作計劃', amount: 3800, paymentMethod: 'card', status: 'paid', sessionId: 's4', sessionLabel: '第三階段 · 2026 年度計劃', createdAt: iso(now - 53 * DAY), paidAt: iso(now - 53 * DAY) },
-    { id: 'o6', orderNo: 'LX26072106', memberId: 'm_chow', memberName: '周永恆', stage: 1, courseName: '第一階段 · 財商基礎班', amount: 980, paymentMethod: 'fps', status: 'pending', sessionId: 's1', sessionLabel: '第一階段 · 8月班', createdAt: iso(now - 3 * DAY) },
-    { id: 'o7', orderNo: 'LX26071007', memberId: 'm_wu', memberName: '吳曉峰', stage: 1, courseName: '第一階段 · 財商基礎班', amount: 980, paymentMethod: 'card', status: 'refund_review', sessionId: 's1', sessionLabel: '第一階段 · 8月班', createdAt: iso(now - 14 * DAY), paidAt: iso(now - 14 * DAY), refund: { reason: '工作時間調動，未能配合上課時間', requestedAt: iso(now - 2 * DAY), status: 'reviewing' } },
-    { id: 'o8', orderNo: 'LX26021408', memberId: 'm_lam', memberName: '林嘉穎', stage: 1, courseName: '第一階段 · 財商基礎班', amount: 880, paymentMethod: 'card', status: 'paid', usedReferralCode: 'KAY4455', referrerMemberId: 'm_kay', createdAt: iso(now - 160 * DAY), paidAt: iso(now - 160 * DAY) },
-    { id: 'o9', orderNo: 'LX26032509', memberId: 'm_leung', memberName: '梁俊賢', stage: 1, courseName: '第一階段 · 財商基礎班', amount: 880, paymentMethod: 'card', status: 'paid', usedReferralCode: 'KAY4455', referrerMemberId: 'm_kay', createdAt: iso(now - 120 * DAY), paidAt: iso(now - 120 * DAY) },
+    { id: 'o6', orderNo: 'LX26072106', memberId: 'm_chow', memberName: '周永恆', stage: 1, courseName: '第一階段 · 財技班', amount: 980, paymentMethod: 'fps', status: 'pending', sessionId: 's1', sessionLabel: '財技 4 班（星期三）', createdAt: iso(now - 3 * DAY) },
+    { id: 'o7', orderNo: 'LX26071007', memberId: 'm_wu', memberName: '吳曉峰', stage: 1, courseName: '第一階段 · 財技班', amount: 980, paymentMethod: 'card', status: 'refund_review', sessionId: 's1', sessionLabel: '財技 4 班（星期三）', createdAt: iso(now - 14 * DAY), paidAt: iso(now - 14 * DAY), refund: { reason: '工作時間調動，未能配合上課時間', requestedAt: iso(now - 2 * DAY), status: 'reviewing' } },
+    { id: 'o8', orderNo: 'LX26021408', memberId: 'm_lam', memberName: '林嘉穎', stage: 1, courseName: '第一階段 · 財技班', amount: 880, paymentMethod: 'card', status: 'paid', usedReferralCode: 'KAY4455', referrerMemberId: 'm_kay', createdAt: iso(now - 160 * DAY), paidAt: iso(now - 160 * DAY) },
+    { id: 'o9', orderNo: 'LX26032509', memberId: 'm_leung', memberName: '梁俊賢', stage: 1, courseName: '第一階段 · 財技班', amount: 880, paymentMethod: 'card', status: 'paid', usedReferralCode: 'KAY4455', referrerMemberId: 'm_kay', createdAt: iso(now - 120 * DAY), paidAt: iso(now - 120 * DAY) },
   ]
   const rebates: RebateRecord[] = [
     { id: 'r1', referrerId: 'm_demo', referrerName: '陳大文', referredMemberId: 'm_may', referredName: '黃美玲', orderId: 'o2', program: 2, slotIndex: 1, amount: 1000, status: 'settled', createdAt: iso(now - 34 * DAY), settledAt: iso(now - 30 * DAY) },
@@ -78,15 +78,15 @@ function seedDB(): DB {
     settings: { rebateSlotExpiryDays: 180 },
     attendance: [],
     reviews: [
-      { id: 'rv1', memberId: 'm_may', memberName: '黃美玲', sessionId: 's1', sessionTitle: '第一階段 · 7月班', rating: 5, comment: '三晚學識咗點睇黃金走勢，導師用真實案例教，完全唔係齋講理論。已經報咗第二階段！', createdAt: iso(now - 20 * DAY) },
-      { id: 'rv2', memberId: 'm_keung', memberName: '李志強', sessionId: 's1', sessionTitle: '第一階段 · 7月班', rating: 5, comment: '本身完全冇投資經驗，上完堂終於明點解要分散配置。小班教學可以即場問問題，好有得着。', createdAt: iso(now - 18 * DAY) },
-      { id: 'rv3', memberId: 'm_lam', memberName: '林嘉穎', sessionId: 's1', sessionTitle: '第一階段 · 3月班', rating: 4, comment: '內容實用，值回票價。房地產嗰講拆得好好，流程同埋伏位都講晒。', createdAt: iso(now - 100 * DAY) },
+      { id: 'rv1', memberId: 'm_may', memberName: '黃美玲', sessionId: 's1', sessionTitle: '財技 2 班', rating: 5, comment: '三晚學識咗點睇黃金走勢，導師用真實案例教，完全唔係齋講理論。已經報咗第二階段！', createdAt: iso(now - 20 * DAY) },
+      { id: 'rv2', memberId: 'm_keung', memberName: '李志強', sessionId: 's1', sessionTitle: '財技 2 班', rating: 5, comment: '本身完全冇投資經驗，上完堂終於明點解要分散配置。小班教學可以即場問問題，好有得着。', createdAt: iso(now - 18 * DAY) },
+      { id: 'rv3', memberId: 'm_lam', memberName: '林嘉穎', sessionId: 's1', sessionTitle: '財技 1 班', rating: 4, comment: '內容實用，值回票價。房地產嗰講拆得好好，流程同埋伏位都講晒。', createdAt: iso(now - 100 * DAY) },
     ],
     waitlist: [
       { id: 'w1', sessionId: 's2', name: '陳生', phone: '95550000', status: 'waiting', createdAt: iso(now - 2 * DAY) },
     ],
     announcements: [
-      { id: 'a1', sessionId: 's1', sessionLabel: '第一階段 · 8月班', title: '開課溫馨提示', body: '各位同學，8 月班第一堂係 8 月 4 日晚上 7 點，請提早 15 分鐘到場，記得帶備課堂通行證 QR 碼簽到。', createdAt: iso(now - 1 * DAY), sendStatus: 'recorded' },
+      { id: 'a1', sessionId: 's1', sessionLabel: '財技 3 班（星期五）', title: '開課溫馨提示', body: '各位同學，財技 3 班第一堂係 7 月 24 日（星期五）晚上 7 點，地點觀塘鴻圖道 33 號華盛數碼大廈 2303 室（牛頭角站 A 出口），請提早 15 分鐘到場，記得帶備課堂通行證 QR 碼簽到。', createdAt: iso(now - 1 * DAY), sendStatus: 'recorded' },
     ],
   }
 }

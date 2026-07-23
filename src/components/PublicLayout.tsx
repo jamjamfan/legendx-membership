@@ -126,8 +126,8 @@ export default function PublicLayout() {
           <div>
             <h4 className="mb-3 text-sm font-semibold text-amber-300">聯絡</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>尖沙咀加連威老道 2–6 號</li>
-              <li>愛賓商業大廈 12 樓全層</li>
+              <li>觀塘鴻圖道 33 號華盛數碼大廈 2303 室</li>
+              <li>港鐵牛頭角站 A 出口</li>
               <li><NavLink className="hover:text-amber-300" to="/login">管理員入口</NavLink></li>
             </ul>
           </div>

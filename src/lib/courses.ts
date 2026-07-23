@@ -15,14 +15,49 @@ export const COURSES: Course[] = [
   {
     stage: 1,
     code: 'LX-101',
-    name: '第一階段 · 財商基礎班',
-    tagline: '三個晚上，建立正確嘅金錢觀同治富思維',
+    name: '第一階段 · 財技班',
+    tagline: '從財商覺醒到【時間自由】藍圖',
     description:
-      '由零開始認識財商：點解啲人愈理愈有錢、黃金 EA 自動交易入門、房地產基本概念。適合完全冇投資經驗嘅朋友。',
-    format: '線下課堂 · 3 晚 × 3.5 小時',
-    topics: ['財商思維', '黃金 EA 入門', '房地產基礎'],
-    highlights: ['小班教學，即場發問', '真實案例拆解', '完成後可銜接第二階段'],
+      '由「亞洲第一企業家教練」Yesir 鄭凱名 及「Forbes 福布斯 ESG 企業家・亞洲富爸爸」James Sir 合作打造。教你將「賺錢、理錢、投資、借貸、生活成本、AI 微創業、被動收入」整合成一套屬於自己嘅時間自由系統——唔係教你賭一個機會，而係建立一套可以慢慢跑出嚟嘅現金流人生財技系統。好多人唔係唔努力，而係一生只靠一種收入模式：出賣時間。呢個班帶你由財商覺醒，走向每月 $30,000 被動收入藍圖。',
+    format: '線下課堂 · 3 晚 × 3.5 小時（19:00–22:30）',
+    topics: ['財富思維', '被動收入', 'AI 微創業', '資產配置'],
+    highlights: [
+      'Yesir 鄭凱名 × James Sir 雙導師合作打造',
+      '每月 $30,000 被動收入路線圖，逐步拆開計算',
+      '唔係唔使做嘢，而係令收入唔再完全依賴每日返工',
+      '內容乾貨滿滿，財技夠實用',
+    ],
     referralSlots: 0,
+    lessons: [
+      {
+        title: 'Lesson 1 · 為什麼你一直努力，卻沒有時間自由（19:00–22:30）',
+        items: [
+          '【穩 ● 流 ● 爆 ● 快】從起步到收入自由的基礎',
+          '揭開全球最穩的賺錢財技工具',
+          '時間自由（其實離你不遠）',
+          '每月被動收入 $30,000（人人都做到）',
+          '經營心態及投資心理的財技',
+        ],
+      },
+      {
+        title: 'Lesson 2 · 財技公式：設計你的被動收入藍圖（19:00–22:30）',
+        items: [
+          'F.I.R.E 賺錢及投資財技公式',
+          '教你設計出你的被動收入藍圖',
+          '運用穩定理財工具，開始賺第一個 $10,000 的被動收入',
+          '贏家永遠就是那 10% 逆思維的人',
+          '修正自己的財富能量氣場',
+        ],
+      },
+      {
+        title: 'Lesson 3 · 每月 $30,000 被動收入——一條可以拆開計算的路線圖（19:00–22:30）',
+        items: [
+          '學懂 AI 微創業（無國界的藍海市場）',
+          '填寫你的優悠白書（介紹不同國家旅居玩法）',
+          '用智慧修行，覺醒如何：賺錢、變錢、省錢、花錢、理錢',
+        ],
+      },
+    ],
   },
   {
     stage: 2,
@@ -65,6 +100,13 @@ export const STAGE1_REFERRAL_PRICE = 880
 export const STAGE2_TUITION = 6800
 export const STAGE2_MEMBERSHIP_FEE = 100
 export const STAGE3_PRICE = 3800
+
+/** 課室地址（觀塘） */
+export const VENUE_ADDRESS = '觀塘鴻圖道 33 號華盛數碼大廈 2303 室'
+export const VENUE_AREA = '觀塘（港鐵牛頭角站 A 出口）'
+/** WhatsApp 留位連結 */
+export const WHATSAPP_URL =
+  'https://api.whatsapp.com/send?phone=85264939468&text=2026%E8%B2%A1%E6%8A%80%E7%8F%AD%E6%88%91%E8%A6%81%E5%A0%B1%E5%90%8D'
 
 export function priceItems(stage: CourseStage, hasReferral: boolean): PriceItem[] {
   if (stage === 1) {

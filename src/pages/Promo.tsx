@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { ArrowRight, CheckCircle2, GraduationCap, MessageSquareText, Sparkles, Star } from 'lucide-react'
 import { toast } from 'sonner'
-import { formatHKD, STAGE1_PUBLIC_PRICE, STAGE1_REFERRAL_PRICE, COURSES } from '@/lib/courses'
+import { formatHKD, STAGE1_PUBLIC_PRICE, STAGE1_REFERRAL_PRICE, COURSES, WHATSAPP_URL } from '@/lib/courses'
 import { useStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -83,6 +83,11 @@ export default function Promo() {
                   用 {referrer.name} 嘅介紹碼報名 <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
+              <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="mt-2 block">
+                <Button variant="outline" size="lg" className="h-12 w-full border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10">
+                  WhatsApp 留位查詢
+                </Button>
+              </a>
               <div className="mt-3 text-xs text-muted-foreground">介紹碼 {referrer.referralCode} 會自動帶入</div>
             </CardContent>
           </Card>

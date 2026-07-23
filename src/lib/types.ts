@@ -25,6 +25,8 @@ export interface Course {
   topics: string[]
   highlights: string[]
   referralSlots: number
+  /** 分課大綱（如第一階段三晚內容） */
+  lessons?: { title: string; items: string[] }[]
 }
 
 export interface Member {

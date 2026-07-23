@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router'
-import { ArrowLeft, CalendarDays, CheckCircle2, Clock, MapPin, Users } from 'lucide-react'
-import { formatHKD, getCourse, priceItems, totalOf, STAGE1_REFERRAL_PRICE } from '@/lib/courses'
+import { ArrowLeft, CalendarDays, CheckCircle2, Clock, MapPin, MessageCircle, Users } from 'lucide-react'
+import { formatHKD, getCourse, priceItems, totalOf, STAGE1_REFERRAL_PRICE, VENUE_AREA, WHATSAPP_URL } from '@/lib/courses'
 import { useStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -27,6 +27,13 @@ export default function CourseDetail() {
 
       <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
         <div>
+          {stage === 1 && (
+            <img
+              src={`${import.meta.env.BASE_URL}poster-stage1.jpg`}
+              alt="LegendX 財技班課程海報"
+              className="mb-8 w-full max-w-md rounded-xl border border-amber-500/30 shadow-[0_0_50px_-12px] shadow-amber-500/25"
+            />
+          )}
           <div className="text-xs font-semibold tracking-widest text-amber-400">{course.code}</div>
           <h1 className="font-display mt-2 text-3xl font-black sm:text-4xl">{course.name}</h1>
           <p className="mt-3 text-lg text-muted-foreground">{course.tagline}</p>
@@ -44,6 +51,33 @@ export default function CourseDetail() {
             ))}
           </ul>
 
+          {course.lessons && (
+            <>
+              <h2 className="font-display mb-4 mt-10 text-xl font-bold">三晚課程大綱</h2>
+              <div className="space-y-4">
+                {course.lessons.map((l, li) => (
+                  <Card key={l.title} className="gold-border">
+                    <CardContent className="p-5">
+                      <div className="mb-3 flex items-center gap-2.5">
+                        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 to-amber-600 text-xs font-black text-[hsl(222,47%,8%)]">
+                          {li + 1}
+                        </span>
+                        <h3 className="text-sm font-bold text-amber-200">{l.title}</h3>
+                      </div>
+                      <ul className="space-y-2">
+                        {l.items.map((item) => (
+                          <li key={item} className="flex items-start gap-2.5 text-sm text-foreground/90">
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-amber-400/70" /> {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+          )}
+
           <h2 className="font-display mb-4 mt-10 text-xl font-bold">開課場次</h2>
           <div className="space-y-3">
             {sessions.length === 0 && <p className="text-sm text-muted-foreground">場次即將公布。</p>}
@@ -58,7 +92,7 @@ export default function CourseDetail() {
                       <div className="mt-1 space-y-1 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5 text-amber-400/70" />{s.dates.join('、')}</div>
                         <div className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-amber-400/70" />{s.time}</div>
-                        <div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-amber-400/70" />{currentMember ? s.venue : '尖沙咀（詳細地址報名後公布）'}</div>
+                        <div className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-amber-400/70" />{currentMember ? s.venue : `${VENUE_AREA}（詳細地址報名後公布）`}</div>
                       </div>
                     </div>
                     <Badge variant="outline" className={full ? 'border-orange-500/40 text-orange-400' : 'border-emerald-500/40 text-emerald-400'}>
@@ -96,6 +130,11 @@ export default function CourseDetail() {
               <Button className="mt-6 h-11 w-full bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-[hsl(222,47%,8%)] hover:opacity-90" onClick={() => navigate(`/checkout/${stage}`)}>
                 立即報名
               </Button>
+              <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="mt-2 block">
+                <Button variant="outline" className="h-11 w-full border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10">
+                  <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp 留位
+                </Button>
+              </a>
               <p className="mt-3 text-center text-xs text-muted-foreground">小班教學 · 名額有限</p>
             </CardContent>
           </Card>

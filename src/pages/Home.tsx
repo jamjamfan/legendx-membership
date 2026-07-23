@@ -89,7 +89,7 @@ export default function Home() {
                   </div>
                   <div className="mt-4 space-y-1.5 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-amber-400/70" />{c.format}</div>
-                    <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-amber-400/70" />尖沙咀（詳細地址報名後公布）</div>
+                    <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-amber-400/70" />觀塘（港鐵牛頭角站 A 出口，詳細地址報名後公布）</div>
                   </div>
                   <div className="mt-auto pt-6">
                     <div className="mb-4">
