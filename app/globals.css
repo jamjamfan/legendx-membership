@@ -1861,6 +1861,30 @@ select {
   text-underline-offset: 3px;
 }
 
+.resend-access {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--line-light);
+  border-radius: 0.65rem;
+}
+
+.resend-access > span {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--slate-700);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.resend-access .form-stack {
+  gap: 0.7rem;
+}
+
+.resend-access button {
+  width: 100%;
+}
+
 .demo-access {
   margin-top: 2rem;
   padding-top: 1.25rem;

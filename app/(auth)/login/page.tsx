@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
-import { signIn, signInDemo } from "@/app/(auth)/actions";
+import {
+  resendConfirmation,
+  signIn,
+  signInDemo,
+} from "@/app/(auth)/actions";
 import { isDemoMode } from "@/lib/runtime";
 
 export default async function LoginPage({
@@ -80,6 +84,26 @@ export default async function LoginPage({
           <p className="auth-switch">
             未有帳戶？ <Link href="/register">建立帳戶</Link>
           </p>
+
+          <div className="resend-access">
+            <span>驗證連結過期或開唔到？</span>
+            <form action={resendConfirmation} className="form-stack">
+              <input name="next" type="hidden" value={query.next ?? "/member"} />
+              <label>
+                <span>註冊電郵</span>
+                <input
+                  autoComplete="email"
+                  name="email"
+                  placeholder="name@example.com"
+                  required
+                  type="email"
+                />
+              </label>
+              <button className="table-action" type="submit">
+                重新發送驗證電郵
+              </button>
+            </form>
+          </div>
 
           {isDemoMode() && (
             <div className="demo-access">

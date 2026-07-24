@@ -23,8 +23,21 @@ const registerSchema = z.object({
   stage: z.coerce.number().min(1).max(3).optional(),
 });
 
+const resendConfirmationSchema = z.object({
+  email: z.email(),
+  next: z.string().optional(),
+});
+
 function safeNextPath(value: string | undefined, fallback: string): string {
   return value?.startsWith("/") && !value.startsWith("//") ? value : fallback;
+}
+
+function authCallbackUrl(next: string): string {
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000";
+  const callbackUrl = new URL("/auth/callback", appUrl);
+  callbackUrl.searchParams.set("next", safeNextPath(next, "/member"));
+  return callbackUrl.toString();
 }
 
 export async function signIn(formData: FormData) {
@@ -127,7 +140,7 @@ export async function signUp(formData: FormData) {
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/auth/callback`,
+      emailRedirectTo: authCallbackUrl(checkoutPath),
       data: {
         display_name: parsed.data.displayName,
         phone: parsed.data.phone,
@@ -144,6 +157,39 @@ export async function signUp(formData: FormData) {
 
   redirect(
     `/login?message=${encodeURIComponent("請先查收驗證電郵，再登入繼續報名")}&next=${encodeURIComponent(checkoutPath)}`,
+  );
+}
+
+export async function resendConfirmation(formData: FormData) {
+  const parsed = resendConfirmationSchema.safeParse({
+    email: formData.get("email"),
+    next: formData.get("next") || undefined,
+  });
+
+  if (!parsed.success) {
+    redirect(
+      `/login?error=${encodeURIComponent("請輸入正確電郵地址")}`,
+    );
+  }
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    redirect(
+      `/login?error=${encodeURIComponent("會員服務尚未完成設定")}`,
+    );
+  }
+
+  const next = safeNextPath(parsed.data.next, "/member");
+  await supabase.auth.resend({
+    type: "signup",
+    email: parsed.data.email,
+    options: {
+      emailRedirectTo: authCallbackUrl(next),
+    },
+  });
+
+  redirect(
+    `/login?message=${encodeURIComponent("如果帳戶仍待驗證，我哋已重新發出驗證電郵；請只使用最新一封。")}&next=${encodeURIComponent(next)}`,
   );
 }
 
