@@ -1,0 +1,3 @@
+export function isDemoMode(): boolean {
+  return process.env.NODE_ENV !== "production";
+}

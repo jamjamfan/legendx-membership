@@ -1,0 +1,43 @@
+# dependencies
+node_modules/
+node_modules.dataless-backup-*/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+
+# testing
+coverage/
+playwright-report/
+test-results/
+
+# local environments and secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# local Supabase
+.supabase/
+supabase/.branches/
+supabase/.temp/
+
+# editor and operating system
+.DS_Store
+.git-dataless-backup-*/
+*.swp
+
+# unavailable File Provider placeholder; valid bw variants are used by the app
+logo/legendx_b.jpg
+
+# logs
+*.log
+pnpm-debug.log*
+
+# Vercel
+.vercel/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
