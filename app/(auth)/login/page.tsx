@@ -84,6 +84,9 @@ export default async function LoginPage({
           <p className="auth-switch">
             未有帳戶？ <Link href="/register">建立帳戶</Link>
           </p>
+          <p className="auth-switch auth-account-note">
+            已經建立過帳戶？請用上面表格直接登入，唔需要重新開戶。
+          </p>
 
           <div className="resend-access">
             <span>驗證連結過期或開唔到？</span>

@@ -1854,6 +1854,11 @@ select {
   font-size: 0.7rem;
 }
 
+.auth-account-note {
+  margin-top: 0.55rem;
+  color: var(--slate-500);
+}
+
 .auth-switch a,
 .form-legal a {
   font-weight: 700;

@@ -40,6 +40,52 @@ function authCallbackUrl(next: string): string {
   return callbackUrl.toString();
 }
 
+type AuthAction = "sign-in" | "sign-up" | "resend";
+
+function authErrorMessage(
+  action: AuthAction,
+  error: { code?: string; status?: number },
+): string {
+  console.error("Supabase Auth action failed", {
+    action,
+    code: error.code ?? "unknown",
+    status: error.status ?? null,
+  });
+
+  if (error.code === "over_email_send_rate_limit" || error.status === 429) {
+    return "驗證電郵發送次數已達上限，請一小時後再試；如果帳戶已確認，請直接登入。";
+  }
+
+  if (error.code === "email_address_not_authorized") {
+    return "目前電郵服務未能寄到呢個地址；請聯絡 LegendX 協助處理。";
+  }
+
+  if (error.code === "email_address_invalid") {
+    return "呢個電郵地址未能使用，請檢查後再試。";
+  }
+
+  if (action === "sign-in" && error.code === "email_not_confirmed") {
+    return "呢個帳戶尚未完成電郵驗證，請在下方重新發送驗證電郵。";
+  }
+
+  if (
+    action === "sign-up" &&
+    (error.code === "user_already_exists" || error.code === "email_exists")
+  ) {
+    return "呢個電郵可能已經有帳戶，請直接登入，唔需要重新開戶。";
+  }
+
+  if (action === "sign-in") {
+    return "電郵或密碼不正確；如果你已經開過戶口，唔需要再次註冊。";
+  }
+
+  if (action === "resend") {
+    return "未能重新發送驗證電郵；如果帳戶已確認，請直接登入。";
+  }
+
+  return "未能建立帳戶，請稍後再試。";
+}
+
 export async function signIn(formData: FormData) {
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
@@ -75,7 +121,9 @@ export async function signIn(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/login?error=${encodeURIComponent("登入資料不正確")}`);
+    redirect(
+      `/login?error=${encodeURIComponent(authErrorMessage("sign-in", error))}`,
+    );
   }
 
   redirect(safeNextPath(parsed.data.next, "/member"));
@@ -136,7 +184,7 @@ export async function signUp(formData: FormData) {
     redirect(checkoutPath);
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
@@ -152,7 +200,15 @@ export async function signUp(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/register?error=${encodeURIComponent("未能建立帳戶，請稍後再試")}`);
+    redirect(
+      `/register?error=${encodeURIComponent(authErrorMessage("sign-up", error))}`,
+    );
+  }
+
+  if (data.user && data.user.identities?.length === 0) {
+    redirect(
+      `/login?message=${encodeURIComponent("呢個電郵可能已經有帳戶；請直接登入，已確認帳戶唔會再收到 signup 驗證信。")}&next=${encodeURIComponent(checkoutPath)}`,
+    );
   }
 
   redirect(
@@ -180,7 +236,7 @@ export async function resendConfirmation(formData: FormData) {
   }
 
   const next = safeNextPath(parsed.data.next, "/member");
-  await supabase.auth.resend({
+  const { error } = await supabase.auth.resend({
     type: "signup",
     email: parsed.data.email,
     options: {
@@ -188,8 +244,14 @@ export async function resendConfirmation(formData: FormData) {
     },
   });
 
+  if (error) {
+    redirect(
+      `/login?error=${encodeURIComponent(authErrorMessage("resend", error))}&next=${encodeURIComponent(next)}`,
+    );
+  }
+
   redirect(
-    `/login?message=${encodeURIComponent("如果帳戶仍待驗證，我哋已重新發出驗證電郵；請只使用最新一封。")}&next=${encodeURIComponent(next)}`,
+    `/login?message=${encodeURIComponent("如果帳戶仍待驗證，我哋已重新發出驗證電郵；已確認帳戶唔會再收到 signup 信，請直接登入。")}&next=${encodeURIComponent(next)}`,
   );
 }
 
