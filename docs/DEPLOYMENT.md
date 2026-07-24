@@ -47,6 +47,12 @@ corepack pnpm verify:deployment -- --url=https://<staging-domain>
 
 Expected result before launch: HTTP `200`, `status=ready`, `database=ready`, and every integration `ready=true`. The endpoint returns HTTP `503` for incomplete configuration or an unreachable database, so a deployment cannot be mistaken for launch-ready while Wallet or Sentry setup is still missing.
 
+The Hobby staging project runs `/api/cron/notifications` once per day at
+`02:00 UTC` (`10:00 Asia/Hong_Kong`) because Vercel Hobby limits cron jobs to
+daily schedules. Trigger the same authenticated route manually during staging
+tests. Restore the five-minute production schedule only after moving the
+production Vercel project to a plan that supports it.
+
 ## 4. Provider callbacks
 
 - Stripe: `https://<domain>/api/webhooks/stripe`
