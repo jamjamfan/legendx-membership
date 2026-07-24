@@ -15,6 +15,9 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.redirect(
-    new URL("/login?error=驗證連結已失效，請重新登入", request.url),
+    new URL(
+      `/login?error=${encodeURIComponent("驗證連結已失效，請在下方重新發送驗證電郵")}`,
+      request.url,
+    ),
   );
 }
