@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Check } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { SubmitButton } from "@/components/submit-button";
 import { signUp } from "@/app/(auth)/actions";
 
 export default async function RegisterPage({
@@ -125,9 +126,9 @@ export default async function RegisterPage({
               建立帳戶即代表你同意 <Link href="/terms">服務條款</Link> 及確認已閱讀{" "}
               <Link href="/privacy">收集個人資料聲明</Link>。
             </p>
-            <button className="button button-dark" type="submit">
+            <SubmitButton pendingLabel="正在建立帳戶，請勿重複提交…">
               建立帳戶並繼續
-            </button>
+            </SubmitButton>
           </form>
         </div>
       </section>

@@ -9,6 +9,7 @@ import {
   LockKeyhole,
 } from "lucide-react";
 import { createCheckoutOrder } from "@/app/checkout/actions";
+import { SubmitButton } from "@/components/submit-button";
 import {
   getPublicSessions,
   hasValidReferralCode,
@@ -135,13 +136,14 @@ export default async function CheckoutPage({
               />
             </label>
 
-            <button
-              className="button button-dark"
+            <SubmitButton
               disabled={!availableSession}
-              type="submit"
+              pendingLabel="正在建立訂單，請稍候…"
             >
-              建立訂單並繼續付款
-            </button>
+              {availableSession
+                ? "建立訂單並繼續付款"
+                : "暫時未有可報名場次"}
+            </SubmitButton>
             <p className="checkout-security">
               <LockKeyhole size={14} aria-hidden />
               正式信用卡資料唔會經過 LegendX 伺服器。

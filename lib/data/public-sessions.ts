@@ -1,7 +1,7 @@
 import { demoSessions } from "@/lib/demo-data";
 import type { CourseStage } from "@/lib/domain/catalog";
 import { isDemoMode } from "@/lib/runtime";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export interface PublicSession {
   id: string;
@@ -44,13 +44,17 @@ const timeFormatter = new Intl.DateTimeFormat("zh-HK", {
 
 type SessionRow = {
   id: string;
+  course_id?: string;
+  stage?: number;
   title: string;
   area: string;
   instructor: string;
   capacity: number;
   starts_at: string;
   ends_at: string;
+  enrollment_closes_at?: string | null;
   seats_remaining: number;
+  lessons?: LessonRow[];
 };
 
 type LessonRow = {
@@ -94,55 +98,26 @@ function toPublicSession(
 export async function getPublicSessions(
   stage: CourseStage,
 ): Promise<PublicSession[]> {
-  const admin = createSupabaseAdminClient();
-  if (!admin) {
+  const server = await createSupabaseServerClient();
+  if (!server) {
     if (!isDemoMode()) return [];
     return demoSessions
       .filter((session) => session.stage === stage)
       .map((session) => ({ ...session }));
   }
 
-  const { data: course } = await admin
-    .from("courses")
-    .select("id")
-    .eq("stage", stage)
-    .eq("active", true)
-    .maybeSingle();
-  if (!course) return [];
-
-  const { data } = await admin
-    .from("public_course_sessions")
-    .select(
-      "id, title, area, instructor, capacity, starts_at, ends_at, seats_remaining",
-    )
-    .eq("course_id", course.id)
-    .or(
-      `enrollment_closes_at.is.null,enrollment_closes_at.gt.${new Date().toISOString()}`,
-    )
-    .order("starts_at");
-
-  const sessionIds = (data ?? []).map((session) => session.id);
-  const { data: lessonRows } =
-    sessionIds.length > 0
-      ? await admin
-          .from("session_lessons")
-          .select("session_id, starts_at, ends_at, position")
-          .in("session_id", sessionIds)
-          .order("position")
-      : { data: [] };
-  const lessonsBySession = new Map<string, LessonRow[]>();
-  for (const lesson of lessonRows ?? []) {
-    const current = lessonsBySession.get(lesson.session_id) ?? [];
-    current.push(lesson as LessonRow);
-    lessonsBySession.set(lesson.session_id, current);
+  const { data, error } = await server.rpc("list_public_course_sessions", {
+    p_stage: stage,
+  });
+  if (error) {
+    console.error("Unable to load public course sessions", {
+      code: error.code,
+    });
+    return [];
   }
 
-  return (data ?? []).map((session) =>
-    toPublicSession(
-      session as SessionRow,
-      stage,
-      lessonsBySession.get(session.id) ?? [],
-    ),
+  return ((data ?? []) as SessionRow[]).map((session) =>
+    toPublicSession(session, stage, session.lessons ?? []),
   );
 }
 
@@ -150,39 +125,27 @@ export async function getPublicSessionById(
   id: string | undefined,
 ): Promise<PublicSession | null> {
   if (!id) return null;
-  const admin = createSupabaseAdminClient();
-  if (!admin) {
+  const server = await createSupabaseServerClient();
+  if (!server) {
     if (!isDemoMode()) return null;
     const session = demoSessions.find((item) => item.id === id);
     return session ? { ...session } : null;
   }
 
-  const { data: session } = await admin
-    .from("public_course_sessions")
-    .select(
-      "id, course_id, title, area, instructor, capacity, starts_at, ends_at, seats_remaining",
-    )
-    .eq("id", id)
-    .maybeSingle();
+  const { data, error } = await server.rpc("list_public_course_sessions", {
+    p_stage: null,
+  });
+  if (error) return null;
+  const session = ((data ?? []) as SessionRow[]).find(
+    (item) => item.id === id,
+  );
   if (!session) return null;
-
-  const { data: course } = await admin
-    .from("courses")
-    .select("stage")
-    .eq("id", session.course_id)
-    .maybeSingle();
-  if (!course || ![1, 2, 3].includes(course.stage)) return null;
-
-  const { data: lessons } = await admin
-    .from("session_lessons")
-    .select("session_id, starts_at, ends_at, position")
-    .eq("session_id", session.id)
-    .order("position");
+  if (!session.stage || ![1, 2, 3].includes(session.stage)) return null;
 
   return toPublicSession(
-    session as SessionRow,
-    course.stage as CourseStage,
-    (lessons ?? []) as LessonRow[],
+    session,
+    session.stage as CourseStage,
+    session.lessons ?? [],
   );
 }
 
@@ -190,12 +153,11 @@ export async function hasValidReferralCode(
   code: string | undefined,
 ): Promise<boolean> {
   if (!code) return false;
-  const admin = createSupabaseAdminClient();
-  if (!admin) return isDemoMode();
-  const { data } = await admin
-    .from("profiles")
-    .select("id")
-    .eq("referral_code", code.toUpperCase())
-    .maybeSingle();
+  const server = await createSupabaseServerClient();
+  if (!server) return isDemoMode();
+  const { data, error } = await server.rpc("is_valid_referral_code", {
+    p_code: code,
+  });
+  if (error) return false;
   return Boolean(data);
 }

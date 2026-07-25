@@ -10,9 +10,10 @@ import {
 } from "lucide-react";
 import { formatHkd } from "@/lib/domain/catalog";
 import { uploadPaymentProof } from "@/app/order/actions";
+import { SubmitButton } from "@/components/submit-button";
 import { getCurrentMember } from "@/lib/data/current-member";
 import { isDemoMode } from "@/lib/runtime";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function OrderPage({
   params,
@@ -37,10 +38,10 @@ export default async function OrderPage({
   let paid = !pending;
   let live = false;
   const member = await getCurrentMember();
-  const admin = createSupabaseAdminClient();
+  const server = await createSupabaseServerClient();
 
-  if (member?.live && admin) {
-    const { data: order } = await admin
+  if (member?.live && server) {
+    const { data: order } = await server
       .from("orders")
       .select("id, order_number, amount_cents, payment_method, status")
       .eq("id", id)
@@ -115,9 +116,9 @@ export default async function OrderPage({
                   type="file"
                 />
               </label>
-              <button className="button button-dark" type="submit">
+              <SubmitButton pendingLabel="正在上載付款證明…">
                 上載付款證明
-              </button>
+              </SubmitButton>
             </form>
           )}
           {method === "cash" && (

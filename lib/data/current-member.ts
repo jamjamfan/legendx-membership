@@ -1,6 +1,5 @@
 import { demoMember } from "@/lib/demo-data";
 import { isDemoMode } from "@/lib/runtime";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export interface CurrentMember {
@@ -14,8 +13,7 @@ export interface CurrentMember {
 
 export async function getCurrentMember(): Promise<CurrentMember | null> {
   const server = await createSupabaseServerClient();
-  const admin = createSupabaseAdminClient();
-  if (!server || !admin) {
+  if (!server) {
     if (!isDemoMode()) return null;
     return {
       id: demoMember.id,
@@ -31,7 +29,7 @@ export async function getCurrentMember(): Promise<CurrentMember | null> {
     data: { user },
   } = await server.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await admin
+  const { data: profile } = await server
     .from("profiles")
     .select("id, display_name, email, referral_code, highest_completed_stage")
     .eq("id", user.id)

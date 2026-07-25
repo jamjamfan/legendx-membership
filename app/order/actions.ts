@@ -4,7 +4,6 @@ import { randomUUID } from "node:crypto";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { isDemoMode } from "@/lib/runtime";
-import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const schema = z.object({
@@ -33,8 +32,7 @@ export async function uploadPaymentProof(formData: FormData) {
   }
 
   const server = await createSupabaseServerClient();
-  const admin = createSupabaseAdminClient();
-  if (!server || !admin) {
+  if (!server) {
     if (isDemoMode()) redirect(`/order/${parsed.data.orderId}?proof=demo`);
     redirect(
       `/order/${parsed.data.orderId}?error=${encodeURIComponent("付款證明服務暫時未能使用")}`,
@@ -46,7 +44,7 @@ export async function uploadPaymentProof(formData: FormData) {
   } = await server.auth.getUser();
   if (!user) redirect(`/login?next=/order/${parsed.data.orderId}`);
 
-  const { data: order } = await admin
+  const { data: order } = await server
     .from("orders")
     .select("id")
     .eq("id", parsed.data.orderId)
@@ -62,7 +60,7 @@ export async function uploadPaymentProof(formData: FormData) {
 
   const extension = allowedTypes.get(file.type)!;
   const path = `${user.id}/${order.id}/${randomUUID()}.${extension}`;
-  const { error: uploadError } = await admin.storage
+  const { error: uploadError } = await server.storage
     .from("payment-proofs")
     .upload(path, file, { contentType: file.type, upsert: false });
   if (uploadError) {
@@ -71,10 +69,10 @@ export async function uploadPaymentProof(formData: FormData) {
     );
   }
 
-  const { error: updateError } = await admin
-    .from("payments")
-    .update({ proof_path: path, status: "requires_review" })
-    .eq("order_id", order.id);
+  const { error: updateError } = await server.rpc("record_payment_proof", {
+    p_order_id: order.id,
+    p_proof_path: path,
+  });
   if (updateError) {
     redirect(
       `/order/${order.id}?error=${encodeURIComponent("付款證明已上載，但未能連結訂單")}`,

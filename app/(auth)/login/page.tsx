@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
+import { SubmitButton } from "@/components/submit-button";
 import {
   resendConfirmation,
   signIn,
@@ -76,9 +77,9 @@ export default async function LoginPage({
                 type="password"
               />
             </label>
-            <button className="button button-dark" type="submit">
+            <SubmitButton pendingLabel="正在登入，請稍候…">
               登入會員中心
-            </button>
+            </SubmitButton>
           </form>
 
           <p className="auth-switch">
@@ -102,9 +103,12 @@ export default async function LoginPage({
                   type="email"
                 />
               </label>
-              <button className="table-action" type="submit">
+              <SubmitButton
+                className="table-action"
+                pendingLabel="正在重新發送…"
+              >
                 重新發送驗證電郵
-              </button>
+              </SubmitButton>
             </form>
           </div>
 
