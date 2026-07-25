@@ -145,13 +145,17 @@ export async function signInDemo(formData: FormData) {
   redirect(role === "admin" ? "/admin" : "/member");
 }
 
-export async function signUp(formData: FormData) {
+export async function signUp(
+  lockedReferralCode: string | undefined,
+  formData: FormData,
+) {
   const parsed = registerSchema.safeParse({
     displayName: formData.get("displayName"),
     phone: formData.get("phone"),
     email: formData.get("email"),
     password: formData.get("password"),
-    referralCode: formData.get("referralCode") || undefined,
+    referralCode:
+      lockedReferralCode || formData.get("referralCode") || undefined,
     marketingEmailConsent: formData.get("marketingEmailConsent") === "on",
     marketingWhatsappConsent:
       formData.get("marketingWhatsappConsent") === "on",

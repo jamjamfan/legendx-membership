@@ -12,12 +12,16 @@ const checkoutSchema = z.object({
   referralCode: z.string().trim().max(20).optional(),
 });
 
-export async function createCheckoutOrder(formData: FormData) {
+export async function createCheckoutOrder(
+  lockedReferralCode: string | undefined,
+  formData: FormData,
+) {
   const parsed = checkoutSchema.safeParse({
     stage: formData.get("stage"),
     sessionId: formData.get("sessionId"),
     paymentMethod: formData.get("paymentMethod"),
-    referralCode: formData.get("referralCode") || undefined,
+    referralCode:
+      lockedReferralCode || formData.get("referralCode") || undefined,
   });
 
   if (!parsed.success) {

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ArrowLeft, Check } from "lucide-react";
+import { ArrowLeft, Check, LockKeyhole } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { SubmitButton } from "@/components/submit-button";
 import { signUp } from "@/app/(auth)/actions";
 import { getCurrentMember } from "@/lib/data/current-member";
 import { getCurrentStageRegistration } from "@/lib/data/current-stage-registration";
+import { hasValidReferralCode } from "@/lib/data/public-sessions";
 import type { CourseStage } from "@/lib/domain/catalog";
 
 export default async function RegisterPage({
@@ -22,17 +23,23 @@ export default async function RegisterPage({
     ? query.stage
     : "1";
   const stageNumber = Number(stage) as CourseStage;
-  const [member, registration] = await Promise.all([
+  const [member, registration, validReferral] = await Promise.all([
     getCurrentMember(),
     getCurrentStageRegistration(stageNumber),
+    hasValidReferralCode(query.ref),
   ]);
+  const lockedReferralCode =
+    validReferral && query.ref ? query.ref.trim().toUpperCase() : undefined;
+  const signUpWithReferral = signUp.bind(null, lockedReferralCode);
 
   if (registration) {
     redirect(`/order/${registration.id}?already=1`);
   }
   if (member) {
     const checkoutPath = `/checkout/${stage}${
-      query.ref ? `?ref=${encodeURIComponent(query.ref)}` : ""
+      lockedReferralCode
+        ? `?ref=${encodeURIComponent(lockedReferralCode)}`
+        : ""
     }`;
     redirect(checkoutPath);
   }
@@ -78,7 +85,7 @@ export default async function RegisterPage({
 
           {query.error && <div className="form-alert is-error">{query.error}</div>}
 
-          <form action={signUp} className="form-stack">
+          <form action={signUpWithReferral} className="form-stack">
             <input name="stage" type="hidden" value={stage} />
             <div className="form-grid">
               <label>
@@ -125,10 +132,17 @@ export default async function RegisterPage({
             <label>
               <span>介紹碼（選填）</span>
               <input
-                defaultValue={query.ref ?? ""}
+                defaultValue={lockedReferralCode ?? query.ref ?? ""}
                 name="referralCode"
                 placeholder="例如 GOLD8888"
+                readOnly={Boolean(lockedReferralCode)}
               />
+              {lockedReferralCode && (
+                <small className="locked-field-note">
+                  <LockKeyhole size={13} aria-hidden />
+                  由朋友專屬連結帶入，介紹碼已鎖定
+                </small>
+              )}
             </label>
             <fieldset className="consent-fields">
               <legend>推廣訊息選擇（唔影響報名）</legend>

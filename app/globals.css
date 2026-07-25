@@ -1842,6 +1842,28 @@ select {
   box-shadow: 0 0 0 3px rgba(86, 199, 217, 0.15);
 }
 
+.form-stack input[readonly] {
+  color: var(--navy-900);
+  cursor: not-allowed;
+  background: rgba(200, 164, 93, 0.1);
+  border-color: rgba(200, 164, 93, 0.52);
+}
+
+.locked-field-note {
+  display: flex;
+  margin-top: 0.42rem;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--slate-700);
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.locked-field-note svg {
+  flex: 0 0 auto;
+  color: var(--gold-600);
+}
+
 .form-stack .button {
   width: 100%;
   margin-top: 0.3rem;

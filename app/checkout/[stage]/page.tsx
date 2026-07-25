@@ -44,6 +44,12 @@ export default async function CheckoutPage({
     getPublicSessions(stage),
     hasValidReferralCode(query.ref),
   ]);
+  const lockedReferralCode =
+    validReferral && query.ref ? query.ref.trim().toUpperCase() : undefined;
+  const createOrderWithReferral = createCheckoutOrder.bind(
+    null,
+    lockedReferralCode,
+  );
   const quote = getCheckoutQuote(stage, validReferral);
   const requestedSession = sessions.find(
     (session) =>
@@ -73,7 +79,7 @@ export default async function CheckoutPage({
 
           {query.error && <div className="form-alert is-error">{query.error}</div>}
 
-          <form action={createCheckoutOrder} className="form-stack">
+          <form action={createOrderWithReferral} className="form-stack">
             <input name="stage" type="hidden" value={stage} />
             <fieldset className="choice-fieldset">
               <legend>1. 選擇場次</legend>
@@ -136,10 +142,17 @@ export default async function CheckoutPage({
             <label>
               <span>介紹碼（只影響第一階段價格）</span>
               <input
-                defaultValue={query.ref ?? ""}
+                defaultValue={lockedReferralCode ?? query.ref ?? ""}
                 name="referralCode"
                 placeholder="例如 GOLD8888"
+                readOnly={Boolean(lockedReferralCode)}
               />
+              {lockedReferralCode && (
+                <small className="locked-field-note">
+                  <LockKeyhole size={13} aria-hidden />
+                  由朋友專屬連結帶入，介紹碼已鎖定
+                </small>
+              )}
             </label>
 
             <SubmitButton
