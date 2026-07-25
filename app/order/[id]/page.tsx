@@ -41,12 +41,20 @@ export default async function OrderPage({
   const server = await createSupabaseServerClient();
 
   if (member?.live && server) {
-    const { data: order } = await server
+    const { data: order, error: orderError } = await server
       .from("orders")
       .select("id, order_number, amount_cents, payment_method, status")
       .eq("id", id)
       .eq("member_id", member.id)
       .maybeSingle();
+    if (orderError) {
+      console.error("Unable to load member order", {
+        code: orderError.code,
+      });
+      redirect(
+        `/member/orders?error=${encodeURIComponent("付款已完成，但暫時未能載入訂單；請稍後再試")}`,
+      );
+    }
     if (!order) notFound();
     method = order.payment_method;
     amount = order.amount_cents / 100;
