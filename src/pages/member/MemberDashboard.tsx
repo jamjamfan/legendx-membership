@@ -11,9 +11,10 @@ import MyReferral from './MyReferral'
 const STAGES = [1, 2, 3]
 
 export default function MemberDashboard() {
-  const { currentMember } = useStore()
+  const { currentMember, authLoading } = useStore()
   const navigate = useNavigate()
 
+  if (authLoading) return <div className="flex min-h-[60vh] items-center justify-center text-muted-foreground">載入中…</div>
   if (!currentMember) return <Navigate to="/login?next=/member" replace />
   if (currentMember.isAdmin) return <Navigate to="/admin" replace />
 

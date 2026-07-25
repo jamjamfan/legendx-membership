@@ -12,8 +12,8 @@ import { Badge } from '@/components/ui/badge'
 
 export default function Promo() {
   const { code } = useParams()
-  const { db, recordPromoView, submitInquiry } = useStore()
-  const referrer = db.members.find((m) => m.referralCode === code?.toUpperCase())
+  const { db, recordPromoView, submitInquiry, findMemberByCode } = useStore()
+  const referrer = findMemberByCode(code)
   const recorded = useRef(false)
 
   useEffect(() => {

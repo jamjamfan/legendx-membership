@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import type {
   AttendanceRecord,
   CourseSession,
@@ -13,6 +13,8 @@ import type {
 } from './types'
 import { getCourse, priceItems, totalOf, REBATE_SCHEDULE, slotsOf } from './courses'
 import { nextClassDate, parseCheckInPayload } from './reminders'
+import { supabase, supabaseEnabled } from './supabase'
+import { loadAllFromSupabase, syncDiff } from './supabaseSync'
 
 const DB_KEY = 'legendx_db_v4'
 const SESSION_KEY = 'legendx_session_v3'
@@ -121,11 +123,29 @@ interface CheckInResult extends Result {
   date?: string
 }
 
+interface OtpProfileInput {
+  name: string
+  phone: string
+  referralCode?: string
+}
+
 interface StoreValue {
   db: DB
   currentMember: Member | null
+  /** demo = localStorage 示範模式；cloud = 接咗 Supabase */
+  mode: 'demo' | 'cloud'
+  /** cloud 模式初次載入中（登入狀態 + 數據未齊） */
+  authLoading: boolean
+  /** 用介紹碼搵會員（cloud 模式下會包括公眾介紹碼目錄） */
+  findMemberByCode: (code?: string) => Member | undefined
+  /** 示範模式密碼登入 */
   login: (email: string, password: string) => Result
+  /** 示範模式註冊 */
   register: (input: { name: string; phone: string; email: string; password: string; referralCode?: string }) => Result
+  /** cloud 模式：發送 email 登入碼 */
+  sendLoginCode: (email: string) => Promise<Result>
+  /** cloud 模式：驗證登入碼；帶 profile 即係註冊 */
+  verifyLoginCode: (email: string, code: string, profile?: OtpProfileInput) => Promise<Result>
   logout: () => void
   placeOrder: (input: PlaceOrderInput) => Result & { orderId?: string }
   confirmPayment: (orderId: string) => void
@@ -150,14 +170,14 @@ interface StoreValue {
 
 const StoreContext = createContext<StoreValue | null>(null)
 
-/** 付清後嘅連鎖效果：升級會員階段 + 產生介紹人回贈 */
+/** 付清後嘅連鎖效果：升級會員階段 + 產生介紹人回贈（cloud 模式下數據庫觸發器會做返同樣嘢，本地只係即時反映） */
 function afterPaid(db: DB, order: Order): DB {
   let members = db.members.map((m) =>
     m.id === order.memberId ? { ...m, stage: Math.max(m.stage, order.stage) as Member['stage'] } : m,
   )
   let rebates = db.rebates
   if (order.stage === 1 && order.referrerMemberId) {
-    const referrer = members.find((m) => m.id === order.referrerMemberId)
+    const referrer = members.find((m) => m.id === order.referrerMemberId) ?? db.members.find((m) => m.id === order.referrerMemberId)
     if (referrer && !rebates.some((r) => r.orderId === order.id && r.status !== 'voided')) {
       const groups = slotsOf(referrer, db.orders, rebates, db.settings.rebateSlotExpiryDays)
       const group = groups.find((g) => g.remaining > 0)
@@ -181,30 +201,110 @@ function afterPaid(db: DB, order: Order): DB {
         ]
       }
     }
-    members = members // keep reference stable
   }
   return { ...db, members, rebates }
 }
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const [db, setDb] = useState<DB>(loadDB)
+  const mode: 'demo' | 'cloud' = supabaseEnabled ? 'cloud' : 'demo'
+  const [db, setDb] = useState<DB>(mode === 'demo' ? loadDB : seedDB)
   const [sessionId, setSessionId] = useState<string | null>(() => localStorage.getItem(SESSION_KEY))
+  const [cloudUserId, setCloudUserId] = useState<string | null>(null)
+  const [authLoading, setAuthLoading] = useState(mode === 'cloud')
+  const [referrers, setReferrers] = useState<Member[]>([])
+  const dbRef = useRef(db)
+  dbRef.current = db
 
+  // demo 模式：本地持久化
   useEffect(() => {
-    localStorage.setItem(DB_KEY, JSON.stringify(db))
-  }, [db])
+    if (mode === 'demo') localStorage.setItem(DB_KEY, JSON.stringify(db))
+  }, [db, mode])
   useEffect(() => {
     if (sessionId) localStorage.setItem(SESSION_KEY, sessionId)
     else localStorage.removeItem(SESSION_KEY)
   }, [sessionId])
 
-  const currentMember = db.members.find((m) => m.id === sessionId) ?? null
+  /** cloud 模式：由 Supabase 載入數據 + 公眾介紹碼目錄 */
+  async function bootstrap(uid_: string | null) {
+    if (!supabase) return
+    setAuthLoading(true)
+    try {
+      const loaded = await loadAllFromSupabase(supabase, dbRef.current)
+      setDb(loaded)
+      const { data: dir } = await supabase.from('public_profiles').select('*')
+      if (dir) {
+        setReferrers(
+          (dir as { id: string; name: string; referral_code: string }[]).map((r) => ({
+            id: r.id,
+            name: r.name,
+            phone: '',
+            email: '',
+            password: '',
+            referralCode: r.referral_code,
+            stage: 0 as const,
+            promoViews: 0,
+            createdAt: '',
+          })),
+        )
+      }
+      setCloudUserId(uid_)
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
+  // cloud 模式：恢復登入狀態 + 監聽變化
+  useEffect(() => {
+    if (mode !== 'cloud' || !supabase) return
+    let active = true
+    supabase.auth.getSession().then(({ data }) => {
+      if (active) void bootstrap(data.session?.user.id ?? null)
+    })
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const uid_ = session?.user.id ?? null
+      // 登出：即刻清空，唔使重載
+      if (!uid_) {
+        setCloudUserId(null)
+        void bootstrap(null)
+        return
+      }
+      void bootstrap(uid_)
+    })
+    return () => {
+      active = false
+      sub.subscription.unsubscribe()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  /** 寫入本地 state；cloud 模式 fire-and-forget 同步上 Supabase */
+  function commit(next: DB) {
+    const prev = dbRef.current
+    setDb(next)
+    dbRef.current = next
+    if (mode === 'cloud' && supabase) void syncDiff(supabase, prev, next)
+  }
+
+  const currentMember =
+    mode === 'cloud'
+      ? (db.members.find((m) => m.id === cloudUserId) ?? null)
+      : (db.members.find((m) => m.id === sessionId) ?? null)
+
+  const findMemberByCode = (code?: string): Member | undefined => {
+    const c = code?.trim().toUpperCase()
+    if (!c) return undefined
+    return db.members.find((m) => m.referralCode === c) ?? referrers.find((m) => m.referralCode === c)
+  }
 
   const value: StoreValue = {
     db,
     currentMember,
+    mode,
+    authLoading,
+    findMemberByCode,
 
     login(email, password) {
+      if (mode === 'cloud') return { ok: false, error: '請用電郵登入碼登入' }
       const m = db.members.find((x) => x.email.toLowerCase() === email.trim().toLowerCase())
       if (!m) return { ok: false, error: '搵唔到呢個電郵嘅帳戶' }
       if (m.password !== password) return { ok: false, error: '密碼唔啱，請再試' }
@@ -213,6 +313,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
 
     register(input) {
+      if (mode === 'cloud') return { ok: false, error: '請用電郵登入碼註冊' }
       const email = input.email.trim().toLowerCase()
       if (!input.name.trim()) return { ok: false, error: '請填姓名' }
       if (db.members.some((x) => x.email.toLowerCase() === email)) return { ok: false, error: '呢個電郵已經註冊咗' }
@@ -239,13 +340,70 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         promoViews: 0,
         createdAt: new Date().toISOString(),
       }
-      setDb({ ...db, members: [...db.members, member] })
+      commit({ ...db, members: [...db.members, member] })
       setSessionId(member.id)
       return { ok: true }
     },
 
+    async sendLoginCode(email) {
+      if (!supabase) return { ok: false, error: '未連接雲端數據庫' }
+      const e = email.trim().toLowerCase()
+      if (!e) return { ok: false, error: '請填電郵' }
+      const { error } = await supabase.auth.signInWithOtp({
+        email: e,
+        options: { shouldCreateUser: true },
+      })
+      if (error) {
+        console.error('[supabase] 發送登入碼失敗：', error.message)
+        return { ok: false, error: '發送失敗，請稍後再試' }
+      }
+      return { ok: true }
+    },
+
+    async verifyLoginCode(email, code, profile) {
+      if (!supabase) return { ok: false, error: '未連接雲端數據庫' }
+      const e = email.trim().toLowerCase()
+      const { data, error } = await supabase.auth.verifyOtp({ email: e, token: code.trim(), type: 'email' })
+      if (error || !data.user) {
+        console.error('[supabase] 驗證登入碼失敗：', error?.message)
+        return { ok: false, error: '登入碼唔啱或已過期，請再試' }
+      }
+      const userId = data.user.id
+      if (profile) {
+        // 註冊流程：建立 profile
+        if (!profile.name.trim()) return { ok: false, error: '請填姓名' }
+        const refCode = profile.referralCode?.trim().toUpperCase()
+        const referrer = refCode ? findMemberByCode(refCode) : undefined
+        if (refCode && !referrer) return { ok: false, error: '介紹碼無效，請檢查清楚' }
+        let newCode = ''
+        do {
+          newCode = `LX${Math.floor(1000 + Math.random() * 9000)}`
+        } while (findMemberByCode(newCode))
+        const { error: pErr } = await supabase.from('profiles').upsert({
+          id: userId,
+          name: profile.name.trim(),
+          phone: profile.phone.trim(),
+          email: e,
+          referral_code: newCode,
+          referrer_id: referrer?.id ?? null,
+          referrer_code: referrer?.referralCode ?? null,
+        })
+        if (pErr) {
+          console.error('[supabase] 建立 profile 失敗：', pErr.message)
+          return { ok: false, error: '建立帳戶失敗，請聯絡職員' }
+        }
+      }
+      await bootstrap(userId)
+      return { ok: true }
+    },
+
     logout() {
-      setSessionId(null)
+      if (mode === 'cloud' && supabase) {
+        void supabase.auth.signOut()
+        setCloudUserId(null)
+      } else {
+        setSessionId(null)
+      }
     },
 
     placeOrder(input) {
@@ -265,14 +423,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       let referrer: Member | undefined
       const code = input.referralCode?.trim().toUpperCase()
       if (input.stage === 1 && code) {
-        referrer = db.members.find((x) => x.referralCode === code)
+        referrer = findMemberByCode(code)
         if (!referrer) return { ok: false, error: '介紹碼無效' }
         if (referrer.id === currentMember.id) return { ok: false, error: '唔可以用自己嘅介紹碼' }
       }
       const course = getCourse(input.stage)
       const amount = totalOf(priceItems(input.stage, !!referrer))
       const order: Order = {
-        id: uid('o'),
+        id: mode === 'cloud' ? crypto.randomUUID() : uid('o'),
         orderNo: `LX${Date.now().toString().slice(-8)}`,
         memberId: currentMember.id,
         memberName: currentMember.name,
@@ -290,7 +448,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
       let next: DB = { ...db, orders: [...db.orders, order] }
       if (order.status === 'paid') next = afterPaid(next, order)
-      setDb(next)
+      commit(next)
       return { ok: true, orderId: order.id }
     },
 
@@ -299,11 +457,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (!order || order.status !== 'pending') return
       const paid: Order = { ...order, status: 'paid', paidAt: new Date().toISOString() }
       const next = afterPaid({ ...db, orders: db.orders.map((o) => (o.id === orderId ? paid : o)) }, paid)
-      setDb(next)
+      commit(next)
     },
 
     requestRefund(orderId, reason) {
-      setDb({
+      commit({
         ...db,
         orders: db.orders.map((o) =>
           o.id === orderId && o.status === 'paid'
@@ -340,11 +498,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...memberOrders.filter((o) => o.status === 'paid' || o.status === 'refund_review').map((o) => o.stage),
       ) as Member['stage']
       const members = db.members.map((m) => (m.id === order.memberId ? { ...m, stage } : m))
-      setDb({ ...db, orders, rebates, members })
+      commit({ ...db, orders, rebates, members })
     },
 
     settleRebate(rebateId) {
-      setDb({
+      commit({
         ...db,
         rebates: db.rebates.map((r) =>
           r.id === rebateId && r.status === 'pending' ? { ...r, status: 'settled', settledAt: new Date().toISOString() } : r,
@@ -353,7 +511,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
 
     recordPromoView(code) {
-      setDb({
+      if (mode === 'cloud' && supabase) {
+        // 公眾都可以計數：行 security definer 函數，唔使掂 profiles 表
+        void supabase.rpc('increment_promo_view', { code })
+        return
+      }
+      commit({
         ...db,
         members: db.members.map((m) =>
           m.referralCode === code.toUpperCase() ? { ...m, promoViews: m.promoViews + 1 } : m,
@@ -363,12 +526,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
     submitInquiry(input) {
       const code = input.referralCode?.trim().toUpperCase()
-      const referrer = code ? db.members.find((x) => x.referralCode === code) : undefined
-      setDb({
+      const referrer = code ? findMemberByCode(code) : undefined
+      commit({
         ...db,
         inquiries: [
           {
-            id: uid('i'),
+            id: mode === 'cloud' ? crypto.randomUUID() : uid('i'),
             name: input.name.trim(),
             phone: input.phone.trim(),
             message: input.message?.trim(),
@@ -383,27 +546,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
 
     setInquiryStatus(id, status) {
-      setDb({ ...db, inquiries: db.inquiries.map((i) => (i.id === id ? { ...i, status } : i)) })
+      commit({ ...db, inquiries: db.inquiries.map((i) => (i.id === id ? { ...i, status } : i)) })
     },
 
     upsertSession(s) {
       const exists = db.sessions.some((x) => x.id === s.id)
-      setDb({
+      commit({
         ...db,
         sessions: exists ? db.sessions.map((x) => (x.id === s.id ? s : x)) : [...db.sessions, s],
       })
     },
 
     deleteSession(id) {
-      setDb({ ...db, sessions: db.sessions.filter((s) => s.id !== id) })
+      commit({ ...db, sessions: db.sessions.filter((s) => s.id !== id) })
     },
 
     updatePromoContent(p) {
-      setDb({ ...db, promoContent: p })
+      commit({ ...db, promoContent: p })
     },
 
     setRebateSlotExpiryDays(days) {
-      setDb({ ...db, settings: { ...db.settings, rebateSlotExpiryDays: days } })
+      commit({ ...db, settings: { ...db.settings, rebateSlotExpiryDays: days } })
     },
 
     checkIn(payload) {
@@ -427,7 +590,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       )
       if (existing) return { ok: true, already: true, memberName: member.name, date }
       const record: AttendanceRecord = {
-        id: uid('a'),
+        id: mode === 'cloud' ? crypto.randomUUID() : uid('a'),
         sessionId,
         memberId,
         memberName: member.name,
@@ -435,7 +598,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         checkedInAt: new Date().toISOString(),
         method,
       }
-      setDb({ ...db, attendance: [...db.attendance, record] })
+      commit({ ...db, attendance: [...db.attendance, record] })
       return { ok: true, memberName: member.name, date }
     },
 
@@ -449,11 +612,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (!enrolled) return { ok: false, error: '你需要係呢班嘅學員先可以評價' }
       if (db.reviews.some((r) => r.memberId === currentMember.id && r.sessionId === input.sessionId))
         return { ok: false, error: '你已經評價過呢班' }
-      setDb({
+      commit({
         ...db,
         reviews: [
           {
-            id: uid('rv'),
+            id: mode === 'cloud' ? crypto.randomUUID() : uid('rv'),
             memberId: currentMember.id,
             memberName: currentMember.name,
             sessionId: session.id,
@@ -469,11 +632,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
 
     joinWaitlist(input) {
-      setDb({
+      commit({
         ...db,
         waitlist: [
           {
-            id: uid('w'),
+            id: mode === 'cloud' ? crypto.randomUUID() : uid('w'),
             sessionId: input.sessionId,
             name: input.name.trim(),
             phone: input.phone.trim(),
@@ -487,16 +650,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
 
     promoteWaitlist(id) {
-      setDb({ ...db, waitlist: db.waitlist.map((w) => (w.id === id ? { ...w, status: 'promoted' as const } : w)) })
+      commit({ ...db, waitlist: db.waitlist.map((w) => (w.id === id ? { ...w, status: 'promoted' as const } : w)) })
     },
 
     sendAnnouncement(input) {
       const session = input.sessionId ? db.sessions.find((s) => s.id === input.sessionId) : undefined
-      setDb({
+      commit({
         ...db,
         announcements: [
           {
-            id: uid('an'),
+            id: mode === 'cloud' ? crypto.randomUUID() : uid('an'),
             sessionId: input.sessionId,
             sessionLabel: session?.title ?? '全部學員',
             title: input.title.trim(),
@@ -510,6 +673,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
 
     resetDemo() {
+      if (mode === 'cloud') return // 雲端模式唔提供一鍵重置，避免誤刪真實數據
       setDb(seedDB())
       setSessionId(null)
     },

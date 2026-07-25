@@ -42,7 +42,11 @@ const NAV_ITEMS = [
 ]
 
 export default function AdminLayout() {
-  const { currentMember, resetDemo } = useStore()
+  const { currentMember, resetDemo, authLoading } = useStore()
+
+  if (authLoading) {
+    return <div className="flex min-h-screen items-center justify-center text-muted-foreground">載入中…</div>
+  }
 
   if (!currentMember || !currentMember.isAdmin) {
     return <Navigate to="/login" replace />

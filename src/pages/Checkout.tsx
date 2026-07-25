@@ -15,7 +15,7 @@ import type { CourseStage, PaymentMethod } from '@/lib/types'
 export default function Checkout() {
   const { stage: stageParam } = useParams()
   const navigate = useNavigate()
-  const { db, currentMember, placeOrder, joinWaitlist } = useStore()
+  const { db, currentMember, placeOrder, joinWaitlist, findMemberByCode, authLoading } = useStore()
   const stage = Number(stageParam) as CourseStage
   const course = getCourse(stage)
 
@@ -36,10 +36,10 @@ export default function Checkout() {
   const validReferral = useMemo(() => {
     const code = referralCode.trim().toUpperCase()
     if (!code || stage !== 1) return undefined
-    const m = db.members.find((x) => x.referralCode === code)
+    const m = findMemberByCode(code)
     if (!m || m.id === currentMember?.id) return undefined
     return m
-  }, [referralCode, stage, db.members, currentMember])
+  }, [referralCode, stage, findMemberByCode, currentMember])
 
   const items = priceItems(stage, !!validReferral)
   const total = totalOf(items)
@@ -49,6 +49,7 @@ export default function Checkout() {
   const selectedSession = sessions.find((s) => s.id === sessionId)
   const sessionFull = selectedSession ? enrolledOf(selectedSession.id) >= selectedSession.capacity : false
 
+  if (authLoading) return <div className="flex min-h-[60vh] items-center justify-center text-muted-foreground">載入中…</div>
   if (!currentMember) return <Navigate to={`/login?next=/checkout/${stage}`} replace />
 
   const codeInvalid = stage === 1 && referralCode.trim() !== '' && !validReferral
