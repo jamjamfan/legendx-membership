@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Supabase 鎖匙，唔好上 GitHub
+.env
+.env.local
