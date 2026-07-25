@@ -229,8 +229,34 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!supabase) return
     setAuthLoading(true)
     try {
-      const loaded = await loadAllFromSupabase(supabase, dbRef.current)
+      let loaded = await loadAllFromSupabase(supabase, dbRef.current)
       setDb(loaded)
+
+      // 經 magic link 登入但未曾建 profile（例如冇行 OTP 註冊流程）→ 自動補建
+      if (uid_ && !loaded.members.some((m) => m.id === uid_)) {
+        const { data: u } = await supabase.auth.getUser()
+        const email = u.user?.email ?? ''
+        if (email) {
+          let newCode = ''
+          do {
+            newCode = `LX${Math.floor(1000 + Math.random() * 9000)}`
+          } while (
+            loaded.members.some((m) => m.referralCode === newCode) ||
+            referrers.some((m) => m.referralCode === newCode)
+          )
+          const { error: pErr } = await supabase.from('profiles').upsert({
+            id: uid_,
+            name: email.split('@')[0],
+            phone: '',
+            email: email.toLowerCase(),
+            referral_code: newCode,
+          })
+          if (pErr) console.error('[supabase] 自動建立 profile 失敗：', pErr.message)
+          else loaded = await loadAllFromSupabase(supabase, dbRef.current)
+          setDb(loaded)
+        }
+      }
+
       const { data: dir } = await supabase.from('public_profiles').select('*')
       if (dir) {
         setReferrers(
