@@ -381,6 +381,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       })
       if (error) {
         console.error('[supabase] 發送登入碼失敗：', error.message)
+        const msg = error.message.toLowerCase()
+        if (msg.includes('rate') || msg.includes('limit') || msg.includes('too many') || (error as { status?: number }).status === 429) {
+          return { ok: false, error: '發送太頻密，免費 email 服務每小時有限額。請等約一個鐘再試，或者撳返上次封 email 嘅登入連結。' }
+        }
         return { ok: false, error: '發送失敗，請稍後再試' }
       }
       return { ok: true }
