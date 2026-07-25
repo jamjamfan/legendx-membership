@@ -70,6 +70,21 @@ describe("launch readiness CLI", () => {
     expect(output).toContain("Launch readiness passed.");
   });
 
+  it("passes a restricted Stripe key for staging", () => {
+    const output = execFileSync(
+      process.execPath,
+      [scriptPath, "--target=staging"],
+      {
+        encoding: "utf8",
+        env: completeEnvironment(
+          "rk_test_123456789012345678901234567890",
+        ),
+      },
+    );
+
+    expect(output).toContain("Launch readiness passed.");
+  });
+
   it("rejects a test Stripe key for production", () => {
     expect(() =>
       execFileSync(
@@ -83,6 +98,6 @@ describe("launch readiness CLI", () => {
           stdio: "pipe",
         },
       ),
-    ).toThrow(/sk_live_/);
+    ).toThrow(/sk_live_ or rk_live_/);
   });
 });

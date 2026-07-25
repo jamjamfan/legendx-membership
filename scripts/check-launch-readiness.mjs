@@ -109,10 +109,11 @@ validateHttpsUrl("NEXT_PUBLIC_SENTRY_DSN");
 
 const stripeSecret = value("STRIPE_SECRET_KEY");
 if (stripeSecret) {
-  const requiredPrefix = target === "production" ? "sk_live_" : "sk_test_";
-  if (!stripeSecret.startsWith(requiredPrefix)) {
+  const allowedPrefixes =
+    target === "production" ? ["sk_live_", "rk_live_"] : ["sk_test_", "rk_test_"];
+  if (!allowedPrefixes.some((prefix) => stripeSecret.startsWith(prefix))) {
     errors.push(
-      `STRIPE_SECRET_KEY must start with ${requiredPrefix} for ${target}`,
+      `STRIPE_SECRET_KEY must start with ${allowedPrefixes.join(" or ")} for ${target}`,
     );
   }
 }
