@@ -62,7 +62,9 @@ export default async function MemberPassPage() {
     sessionId = session.id;
     sessionTitle = session.title;
     dateLabel = new Intl.DateTimeFormat("zh-HK", {
-      dateStyle: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
       weekday: "short",
       timeZone: "Asia/Hong_Kong",
     }).format(startsAt);
