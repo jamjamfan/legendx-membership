@@ -340,14 +340,31 @@ export default async function CoursePage({
                       </span>
                     </div>
                     <Link
-                      className={`button ${session.seatsRemaining > 0 ? "button-dark" : "button-outline"}`}
+                      className={`button ${
+                        registration
+                          ? "button-outline"
+                          : session.seatsRemaining > 0
+                            ? "button-dark"
+                            : "button-outline"
+                      }`}
                       href={
-                        session.seatsRemaining > 0
+                        registration
+                          ? registrationHref
+                          : session.seatsRemaining > 0
                           ? `/checkout/${course.stage}?session=${session.id}`
                           : `/waitlist?session=${session.id}`
                       }
                     >
-                      {session.seatsRemaining > 0 ? "報讀呢一班" : "加入候補"}
+                      {registration ? (
+                        <>
+                          <CircleCheck size={16} aria-hidden />
+                          已報名 · 查看訂單
+                        </>
+                      ) : session.seatsRemaining > 0 ? (
+                        "報讀呢一班"
+                      ) : (
+                        "加入候補"
+                      )}
                     </Link>
                   </article>
                 ))
