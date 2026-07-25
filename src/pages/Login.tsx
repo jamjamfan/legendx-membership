@@ -70,11 +70,11 @@ export default function Login() {
                 <p className="rounded-lg border border-border/60 bg-muted/40 p-3 text-sm leading-relaxed text-muted-foreground">
                   登入電郵已經發送咗去 <b className="text-amber-300">{email}</b>。<br />
                   👉 最簡單：<b className="text-amber-300">撳 email 入面條連結</b>，就會自動登入。<br />
-                  （如果封 email 有 6 位登入碼，都可以喺下面輸入。）
+                  （將 email 入面嘅登入碼喺下面輸入都得。）
                 </p>
                 <div className="space-y-1.5">
-                  <Label>6 位登入碼（如適用）</Label>
-                  <Input inputMode="numeric" maxLength={6} placeholder="123456" value={code} onChange={(e) => { setCode(e.target.value); setError('') }} className="text-center text-lg tracking-[0.5em]" />
+                  <Label>登入碼（如適用）</Label>
+                  <Input inputMode="numeric" maxLength={8} placeholder="12345678" value={code} onChange={(e) => { setCode(e.target.value); setError('') }} className="text-center text-lg tracking-[0.5em]" />
                 </div>
                 {error && <p className="text-sm text-red-400">{error}</p>}
                 <Button type="submit" disabled={busy} className="h-11 w-full bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-[hsl(222,47%,8%)]">
