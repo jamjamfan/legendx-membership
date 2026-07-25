@@ -11,6 +11,7 @@ import {
 import { BrandMark } from "@/components/brand-mark";
 import { PromoViewTracker } from "@/components/promo-view-tracker";
 import { submitPromoInquiry } from "@/app/p/actions";
+import { getCurrentStageRegistration } from "@/lib/data/current-stage-registration";
 import { STAGE_ONE_WHATSAPP_URL } from "@/lib/domain/catalog";
 import { isDemoMode } from "@/lib/runtime";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -39,6 +40,7 @@ export default async function PromoPage({
   const query = await searchParams;
   const code = rawCode.toUpperCase();
   const admin = createSupabaseAdminClient();
+  const registration = await getCurrentStageRegistration(1);
   const [{ data: profile }, { data: promoContent }] = admin
     ? await Promise.all([
         admin
@@ -76,6 +78,9 @@ export default async function PromoPage({
         "拆解 HK$30,000 規劃目標",
         "用 AI 微創業開拓收入可能",
       ];
+  const registrationHref = registration
+    ? `/order/${registration.id}?already=1`
+    : `/register?stage=1&ref=${encodeURIComponent(code)}`;
 
   return (
     <main className="promo-page">
@@ -84,9 +89,13 @@ export default async function PromoPage({
         <Link href="/">
           <BrandMark />
         </Link>
-        <Link href={`/register?stage=1&ref=${encodeURIComponent(code)}`}>
-          用介紹價報名
-          <ArrowRight size={15} aria-hidden />
+        <Link href={registrationHref}>
+          {registration ? "查看已報名訂單" : "用介紹價報名"}
+          {registration ? (
+            <CircleCheck size={15} aria-hidden />
+          ) : (
+            <ArrowRight size={15} aria-hidden />
+          )}
         </Link>
       </header>
 
@@ -105,22 +114,40 @@ export default async function PromoPage({
             <small>原價 HK$980 · 介紹碼 {code}</small>
           </div>
           <div className="promo-cta-stack">
+            {registration && (
+              <div className="form-alert is-success">
+                你已經報讀第一階段，唔需要再次付款。
+              </div>
+            )}
             <Link
-              className="button button-primary"
-              href={`/register?stage=1&ref=${encodeURIComponent(code)}`}
+              className={`button ${
+                registration ? "button-outline" : "button-primary"
+              }`}
+              href={registrationHref}
             >
-              用呢個介紹碼開始
-              <ArrowRight size={16} aria-hidden />
+              {registration ? (
+                <>
+                  <CircleCheck size={16} aria-hidden />
+                  已報名 · 查看訂單
+                </>
+              ) : (
+                <>
+                  用呢個介紹碼開始
+                  <ArrowRight size={16} aria-hidden />
+                </>
+              )}
             </Link>
-            <a
-              className="button button-whatsapp"
-              href={STAGE_ONE_WHATSAPP_URL}
-              rel="noreferrer"
-              target="_blank"
-            >
-              <MessageCircleMore size={16} aria-hidden />
-              WhatsApp 留位
-            </a>
+            {!registration && (
+              <a
+                className="button button-whatsapp"
+                href={STAGE_ONE_WHATSAPP_URL}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <MessageCircleMore size={16} aria-hidden />
+                WhatsApp 留位
+              </a>
+            )}
           </div>
         </div>
         <div className="promo-quote">

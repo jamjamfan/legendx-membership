@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
   Banknote,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { createCheckoutOrder } from "@/app/checkout/actions";
 import { SubmitButton } from "@/components/submit-button";
+import { getCurrentStageRegistration } from "@/lib/data/current-stage-registration";
 import {
   getPublicSessions,
   hasValidReferralCode,
@@ -33,6 +34,11 @@ export default async function CheckoutPage({
   const stage = Number(stageParam) as CourseStage;
   const course = courses.find((item) => item.stage === stage);
   if (!course) notFound();
+
+  const registration = await getCurrentStageRegistration(stage);
+  if (registration) {
+    redirect(`/order/${registration.id}?already=1`);
+  }
 
   const [sessions, validReferral] = await Promise.all([
     getPublicSessions(stage),

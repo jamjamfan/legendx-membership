@@ -15,6 +15,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { SiteFooter } from "@/components/site-footer";
+import { getCurrentStageRegistration } from "@/lib/data/current-stage-registration";
 import { getPublicSessions } from "@/lib/data/public-sessions";
 import {
   courses,
@@ -67,8 +68,14 @@ export default async function CoursePage({
   const course = getCourse(stageParam);
   if (!course) notFound();
 
-  const sessions = await getPublicSessions(course.stage);
+  const [sessions, registration] = await Promise.all([
+    getPublicSessions(course.stage),
+    getCurrentStageRegistration(course.stage),
+  ]);
   const displayPrice = course.price + (course.membershipFee ?? 0);
+  const registrationHref = registration
+    ? `/order/${registration.id}?already=1`
+    : `/checkout/${course.stage}`;
 
   return (
     <>
@@ -89,7 +96,15 @@ export default async function CoursePage({
               </Link>
             ))}
           </nav>
-          <Link href={`/register?stage=${course.stage}`}>建立帳戶</Link>
+          <Link
+            href={
+              registration
+                ? registrationHref
+                : `/register?stage=${course.stage}`
+            }
+          >
+            {registration ? "查看已報名訂單" : "建立帳戶"}
+          </Link>
         </header>
 
         <section
@@ -142,13 +157,24 @@ export default async function CoursePage({
               </span>
               <div className="course-price-actions">
                 <Link
-                  className="button button-primary"
-                  href={`/checkout/${course.stage}`}
+                  className={`button ${
+                    registration ? "button-outline" : "button-primary"
+                  }`}
+                  href={registrationHref}
                 >
-                  揀場次並報名
-                  <ArrowRight size={16} aria-hidden />
+                  {registration ? (
+                    <>
+                      <CircleCheck size={16} aria-hidden />
+                      已報名 · 查看訂單
+                    </>
+                  ) : (
+                    <>
+                      揀場次並報名
+                      <ArrowRight size={16} aria-hidden />
+                    </>
+                  )}
                 </Link>
-                {course.stage === 1 && (
+                {course.stage === 1 && !registration && (
                   <a
                     className="button button-whatsapp"
                     href={STAGE_ONE_WHATSAPP_URL}

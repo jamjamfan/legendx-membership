@@ -25,6 +25,7 @@ export default async function OrderPage({
     stage?: string;
     error?: string;
     proof?: string;
+    already?: string;
   }>;
 }) {
   const { id } = await params;
@@ -85,6 +86,11 @@ export default async function OrderPage({
             ? "完成以下付款步驟後，職員會核對款項並確認你嘅座位。"
             : "課程已經加入會員中心；你會喺上堂前收到提醒。"}
         </p>
+        {query.already && (
+          <div className="form-alert is-success">
+            你已經有呢個階段嘅有效訂單，唔需要再次報名或付款。
+          </div>
+        )}
         {query.error && <div className="form-alert is-error">{query.error}</div>}
         {query.proof && (
           <div className="form-alert is-success">

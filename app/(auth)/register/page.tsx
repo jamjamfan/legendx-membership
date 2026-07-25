@@ -1,8 +1,12 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
 import { BrandMark } from "@/components/brand-mark";
 import { SubmitButton } from "@/components/submit-button";
 import { signUp } from "@/app/(auth)/actions";
+import { getCurrentMember } from "@/lib/data/current-member";
+import { getCurrentStageRegistration } from "@/lib/data/current-stage-registration";
+import type { CourseStage } from "@/lib/domain/catalog";
 
 export default async function RegisterPage({
   searchParams,
@@ -17,6 +21,21 @@ export default async function RegisterPage({
   const stage = ["1", "2", "3"].includes(query.stage ?? "")
     ? query.stage
     : "1";
+  const stageNumber = Number(stage) as CourseStage;
+  const [member, registration] = await Promise.all([
+    getCurrentMember(),
+    getCurrentStageRegistration(stageNumber),
+  ]);
+
+  if (registration) {
+    redirect(`/order/${registration.id}?already=1`);
+  }
+  if (member) {
+    const checkoutPath = `/checkout/${stage}${
+      query.ref ? `?ref=${encodeURIComponent(query.ref)}` : ""
+    }`;
+    redirect(checkoutPath);
+  }
 
   return (
     <main className="auth-page">

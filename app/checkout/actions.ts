@@ -82,7 +82,8 @@ export async function createCheckoutOrder(formData: FormData) {
               ? "唔可以使用自己嘅介紹碼"
               : error?.message.includes("stage_two_required")
                 ? "完成第二階段後先可以報讀第三階段"
-                : error?.message.includes("active_order_exists")
+                : error?.message.includes("active_order_exists") ||
+                    error?.code === "23505"
                   ? "你已有同階段有效訂單"
                   : "未能建立訂單，請稍後再試";
     redirect(`/checkout/${stage}?error=${encodeURIComponent(reason)}`);

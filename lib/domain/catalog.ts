@@ -30,12 +30,12 @@ export const courses: readonly CourseDefinition[] = [
     name: "財技",
     title: "從財商覺醒，到時間自由",
     summary:
-      "Yesir 鄭凱名與 Forbes 福布斯 ESG 企業家・亞洲富爸爸 James Sir 合作打造，將賺錢、理錢、投資、借貸、生活成本、AI 微創業與被動收入，整合成一套屬於你嘅時間自由系統。",
+      "亞洲第一企業家教練 Yesir 鄭凱名博士與 Forbes 福布斯 ESG 企業家・亞洲富爸爸 James Sir 合作打造，將賺錢、理錢、投資、借貸、生活成本、AI 微創業與被動收入，整合成一套屬於你嘅時間自由系統。",
     price: 980,
     referralPrice: 880,
     format: "線下課堂 · 三晚 × 3.5 小時 · 19:00–22:30",
     faculty: [
-      "亞洲第一企業家教練 Yesir 鄭凱名",
+      "亞洲第一企業家教練 Yesir 鄭凱名博士",
       "Forbes 福布斯 ESG 企業家・亞洲富爸爸 James Sir",
     ],
     outcomes: [
