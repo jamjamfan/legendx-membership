@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router'
-import { GraduationCap, MailCheck, UserPlus } from 'lucide-react'
+import { GraduationCap, Lock, MailCheck, UserPlus } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -99,9 +99,29 @@ export default function Register() {
                 <Input type="password" placeholder="最少 6 位" value={form.password} onChange={set('password')} required minLength={6} />
               </div>
               <div className="space-y-1.5">
-                <Label>介紹碼（可選）</Label>
-                <Input placeholder="例如 GOLD8888" value={form.referralCode} onChange={set('referralCode')} />
-                {form.referralCode && <p className="text-xs text-emerald-400">用介紹碼報讀第一階段可享 HK$880 優惠價</p>}
+                <Label>介紹碼{refFromUrl ? '' : '（可選）'}</Label>
+                {refFromUrl ? (
+                  <>
+                    <div className="flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2.5">
+                      <Lock className="h-4 w-4 shrink-0 text-amber-400" />
+                      <span className="font-mono text-sm tracking-[0.3em] text-amber-300">{form.referralCode}</span>
+                      <span className="ml-auto text-xs text-muted-foreground">朋友連結帶入</span>
+                    </div>
+                    <p className="text-xs text-emerald-400">經朋友介紹報讀第一階段可享 HK$880 優惠價</p>
+                    <button
+                      type="button"
+                      onClick={() => { setForm({ ...form, referralCode: '' }); navigate('/register', { replace: true }) }}
+                      className="text-xs text-muted-foreground hover:text-amber-300"
+                    >
+                      唔係呢位朋友介紹？撳呢度清除重填
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Input placeholder="例如 GOLD8888" value={form.referralCode} onChange={set('referralCode')} />
+                    {form.referralCode && <p className="text-xs text-emerald-400">用介紹碼報讀第一階段可享 HK$880 優惠價</p>}
+                  </>
+                )}
               </div>
               {error && <p className="text-sm text-red-400">{error}</p>}
               <Button type="submit" className="h-11 w-full bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-[hsl(222,47%,8%)]">
@@ -123,9 +143,29 @@ export default function Register() {
                 <Input type="email" placeholder="you@example.com" value={form.email} onChange={set('email')} required />
               </div>
               <div className="space-y-1.5">
-                <Label>介紹碼（可選）</Label>
-                <Input placeholder="例如 GOLD8888" value={form.referralCode} onChange={set('referralCode')} />
-                {form.referralCode && <p className="text-xs text-emerald-400">用介紹碼報讀第一階段可享 HK$880 優惠價</p>}
+                <Label>介紹碼{refFromUrl ? '' : '（可選）'}</Label>
+                {refFromUrl ? (
+                  <>
+                    <div className="flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2.5">
+                      <Lock className="h-4 w-4 shrink-0 text-amber-400" />
+                      <span className="font-mono text-sm tracking-[0.3em] text-amber-300">{form.referralCode}</span>
+                      <span className="ml-auto text-xs text-muted-foreground">朋友連結帶入</span>
+                    </div>
+                    <p className="text-xs text-emerald-400">經朋友介紹報讀第一階段可享 HK$880 優惠價</p>
+                    <button
+                      type="button"
+                      onClick={() => { setForm({ ...form, referralCode: '' }); navigate('/register', { replace: true }) }}
+                      className="text-xs text-muted-foreground hover:text-amber-300"
+                    >
+                      唔係呢位朋友介紹？撳呢度清除重填
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Input placeholder="例如 GOLD8888" value={form.referralCode} onChange={set('referralCode')} />
+                    {form.referralCode && <p className="text-xs text-emerald-400">用介紹碼報讀第一階段可享 HK$880 優惠價</p>}
+                  </>
+                )}
               </div>
               {error && <p className="text-sm text-red-400">{error}</p>}
               <Button type="submit" disabled={busy} className="h-11 w-full bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-[hsl(222,47%,8%)]">
