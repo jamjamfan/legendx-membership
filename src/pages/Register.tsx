@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export default function Register() {
-  const { register, mode, sendLoginCode, verifyLoginCode } = useStore()
+  const { register, mode, sendLoginCode, verifyLoginCode, findMemberByCode } = useStore()
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const refFromUrl = params.get('ref')?.toUpperCase() ?? ''
@@ -42,6 +42,10 @@ export default function Register() {
     e.preventDefault()
     if (!form.name.trim()) { setError('請填姓名'); return }
     if (!form.phone.trim()) { setError('請填電話 / WhatsApp'); return }
+    if (form.referralCode.trim() && !findMemberByCode(form.referralCode)) {
+      setError('介紹碼無效，請檢查清楚（冇介紹碼可以留空）')
+      return
+    }
     setBusy(true)
     const r = await sendLoginCode(form.email)
     setBusy(false)

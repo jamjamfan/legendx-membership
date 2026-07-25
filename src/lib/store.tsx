@@ -393,6 +393,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     async verifyLoginCode(email, code, profile) {
       if (!supabase) return { ok: false, error: '未連接雲端數據庫' }
       const e = email.trim().toLowerCase()
+      // 先檢查註冊資料（包括介紹碼），通過咗先至用一次性 OTP——
+      // 否則介紹碼錯會嘥咗個碼，用戶要重新收 email
+      let referrer: Member | undefined
+      if (profile) {
+        if (!profile.name.trim()) return { ok: false, error: '請填姓名' }
+        const refCode = profile.referralCode?.trim().toUpperCase()
+        referrer = refCode ? findMemberByCode(refCode) : undefined
+        if (refCode && !referrer) return { ok: false, error: '介紹碼無效，請檢查清楚' }
+      }
       const { data, error } = await supabase.auth.verifyOtp({ email: e, token: code.trim(), type: 'email' })
       if (error || !data.user) {
         console.error('[supabase] 驗證登入碼失敗：', error?.message)
@@ -400,11 +409,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
       const userId = data.user.id
       if (profile) {
-        // 註冊流程：建立 profile
-        if (!profile.name.trim()) return { ok: false, error: '請填姓名' }
-        const refCode = profile.referralCode?.trim().toUpperCase()
-        const referrer = refCode ? findMemberByCode(refCode) : undefined
-        if (refCode && !referrer) return { ok: false, error: '介紹碼無效，請檢查清楚' }
         let newCode = ''
         do {
           newCode = `LX${Math.floor(1000 + Math.random() * 9000)}`
