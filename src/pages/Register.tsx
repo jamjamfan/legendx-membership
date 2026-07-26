@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export default function Register() {
-  const { register, mode, sendLoginCode, verifyLoginCode, findMemberByCode } = useStore()
+  const { register, mode, sendLoginCode, verifyLoginCode, findMemberByCode, currentMember, logout } = useStore()
   const navigate = useNavigate()
   const [params] = useSearchParams()
   const refFromUrl = params.get('ref')?.toUpperCase() ?? ''
@@ -64,6 +64,45 @@ export default function Register() {
     setBusy(false)
     if (r.ok) goNext()
     else setError(r.error ?? '驗證失敗')
+  }
+
+  // 已登入會員唔應該再註冊——顯示提示，唔顯示表格
+  if (currentMember) {
+    return (
+      <div className="flex min-h-[70vh] items-center justify-center px-4 py-16">
+        <Card className="gold-border w-full max-w-md">
+          <CardContent className="space-y-5 p-8 text-center">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 to-amber-600 text-[hsl(222,47%,8%)]">
+              <GraduationCap className="h-6 w-6" />
+            </span>
+            <div>
+              <h1 className="font-display text-2xl font-bold">你已經係會員</h1>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                你好，{currentMember.name}。你嘅帳戶已經開咗兼登入緊，唔使再註冊。
+              </p>
+              {refFromUrl && (
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  （介紹碼 <span className="font-mono text-amber-300">{refFromUrl}</span> 只適用於新會員註冊；現有會員可以直接喺會員中心報名課程。）
+                </p>
+              )}
+            </div>
+            <Button
+              onClick={() => navigate('/member')}
+              className="h-11 w-full bg-gradient-to-r from-amber-400 to-amber-600 font-bold text-[hsl(222,47%,8%)]"
+            >
+              去會員中心
+            </Button>
+            <button
+              type="button"
+              onClick={() => logout()}
+              className="w-full text-center text-xs text-muted-foreground hover:text-amber-300"
+            >
+              唔係你嘅帳戶？登出，用另一個電郵註冊
+            </button>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
