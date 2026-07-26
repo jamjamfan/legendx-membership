@@ -114,7 +114,7 @@ export default async function AdminRebatesPage({
           <div>
             <p className="eyebrow">Scholarship ledger</p>
             <h1>獎學金結算</h1>
-            <p>名額、朋友訂單、回贈金額同負結餘。</p>
+            <p>名額、朋友訂單、回贈金額及負結餘。</p>
           </div>
         </div>
         {query.error && <div className="form-alert is-error">{query.error}</div>}
@@ -186,12 +186,12 @@ export default async function AdminRebatesPage({
                               className="table-action"
                               pendingLabel="結算中…"
                             >
-                              標記已過數
+                              標記已轉帳
                             </SubmitButton>
                           </form>
                         ) : !rebate.live ? (
                           <DemoActionButton
-                            label="標記已過數"
+                            label="標記已轉帳"
                             doneLabel="已結算"
                           />
                         ) : (

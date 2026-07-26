@@ -25,10 +25,10 @@ export default function NotFound() {
             fontWeight: 500,
           }}
         >
-          呢一步未喺路線上。
+          這一步未在路線上。
         </h1>
         <p style={{ color: "rgba(255,255,255,.58)" }}>
-          返回首頁，再揀你要行嘅方向。
+          返回首頁，再選擇你的方向。
         </p>
         <Link className="button button-primary" href="/">
           返回首頁

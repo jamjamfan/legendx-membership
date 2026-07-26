@@ -69,7 +69,7 @@ export default async function AdminInquiriesPage({
           <div>
             <p className="eyebrow">Lead tracking</p>
             <h1>查詢跟進</h1>
-            <p>由會員推廣頁進入嘅查詢及轉化狀態。</p>
+            <p>從會員推廣頁提交的查詢及轉化狀態。</p>
           </div>
         </div>
         {query.error && <div className="form-alert is-error">{query.error}</div>}

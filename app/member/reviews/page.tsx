@@ -49,7 +49,7 @@ export default async function MemberReviewsPage({
           <div>
             <p className="eyebrow">Course feedback</p>
             <h1>課後評價</h1>
-            <p>你嘅回饋會幫我哋改善課程；公開展示必須由你明確同意。</p>
+            <p>你的回饋將協助我們改善課程；公開展示必須取得你的明確同意。</p>
           </div>
         </div>
         {query.error && <div className="form-alert is-error">{query.error}</div>}
@@ -91,7 +91,7 @@ export default async function MemberReviewsPage({
               <label className="inline-check">
                 <input name="consentPublic" type="checkbox" />
                 <span>
-                  我同意 LegendX 喺推廣頁展示呢段評價同我嘅顯示名稱
+                  我同意 LegendX 在推廣頁展示這段評價及我的顯示名稱
                 </span>
               </label>
               <button className="button button-dark" type="submit">
@@ -102,7 +102,7 @@ export default async function MemberReviewsPage({
             <div className="empty-state">
               <Star size={24} aria-hidden />
               <h2>完成課程後就可以評價</h2>
-              <p>你目前未有已完成而可以評價嘅場次。</p>
+              <p>你目前未有已完成並可供評價的場次。</p>
             </div>
           )}
         </section>

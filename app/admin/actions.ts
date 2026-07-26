@@ -122,7 +122,7 @@ export async function approveRefund(formData: FormData) {
     p_actor_id: actorId,
   });
   if (error) fail("/admin/orders", "外部退款完成，但內部狀態同步失敗");
-  done("/admin/orders", "退款已完成，座位同相關獎學金已同步調整");
+  done("/admin/orders", "退款已完成，座位及相關獎學金已同步調整");
 }
 
 const rejectSchema = z.object({
@@ -182,7 +182,7 @@ export async function settleRebate(formData: FormData) {
     p_note: parsed.data.note ?? null,
   });
   if (error) fail("/admin/rebates", "未能完成獎學金結算");
-  done("/admin/rebates", "獎學金已標記過數並寫入帳本");
+  done("/admin/rebates", "獎學金已標記為已轉帳並寫入帳本");
 }
 
 const advanceMemberStageSchema = z.object({
@@ -204,7 +204,7 @@ export async function advanceMemberStage(formData: FormData) {
     .maybeSingle();
   if (!profile) fail("/admin/members", "會員不存在");
   if (profile.highest_completed_stage >= parsed.data.stage) {
-    fail("/admin/members", "會員已經完成呢個階段");
+    fail("/admin/members", "會員已經完成這個階段");
   }
   if (parsed.data.stage > profile.highest_completed_stage + 1) {
     fail("/admin/members", "只可以逐階段完成課程");
@@ -477,7 +477,7 @@ export async function cancelSession(formData: FormData) {
       phone: profile.phone,
       displayName: profile.display_name,
       subject: `LegendX 場次取消｜${session.title}`,
-      body: `${session.title} 已取消。我哋會另行聯絡你安排退款或轉班。`,
+      body: `${session.title} 已取消。我們會另行聯絡你安排退款或轉班。`,
     };
     return [
       {
@@ -551,7 +551,7 @@ export async function inviteWaitlistEntry(formData: FormData) {
     phone: entry.phone,
     displayName: entry.name,
     subject: `LegendX 候補有位｜${session?.title ?? "課程場次"}`,
-    body: `你嘅候補場次有位，請於 24 小時內到 ${appUrl}/checkout/1?session=${entry.session_id} 完成報名。`,
+    body: `你的候補場次現有名額，請於 24 小時內前往 ${appUrl}/checkout/1?session=${entry.session_id} 完成報名。`,
   };
   const channels = [
     ...(entry.email ? ["email" as const] : []),
@@ -612,7 +612,7 @@ export async function moderateReview(formData: FormData) {
     parsed.data.action === "publish" &&
     (review.rating < 4 || !review.consent_public)
   ) {
-    fail("/admin/reviews", "只可以發佈 4 星以上兼已同意公開嘅評價");
+    fail("/admin/reviews", "只可發佈 4 星以上並已同意公開的評價");
   }
   await admin
     .from("reviews")
@@ -673,7 +673,7 @@ export async function updateSettings(formData: FormData) {
     {
       key: "scholarship_validity_days",
       value: parsed.data.scholarshipDays,
-      description: "獎學金名額由付款日起計嘅有效日數",
+      description: "獎學金名額由付款日起計的有效日數",
       updated_by: actorId,
     },
     {
@@ -713,7 +713,7 @@ export async function sendAnnouncement(formData: FormData) {
     body: formData.get("body"),
     channels: formData.getAll("channels"),
   });
-  if (!parsed.success) fail("/admin/announcements", "請填妥公告同發送渠道");
+  if (!parsed.success) fail("/admin/announcements", "請填妥公告及發送渠道");
   const { admin, actorId } = await requireStaff("/admin/announcements");
   const sessionId =
     parsed.data.sessionId === "all" ? null : parsed.data.sessionId;

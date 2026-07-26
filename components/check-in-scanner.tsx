@@ -63,12 +63,12 @@ export function CheckInScanner({
         };
         if (!response.ok) {
           const errors: Record<string, string> = {
-            already_checked_in: "呢位學員已經簽到。",
+            already_checked_in: "這位學員已經簽到。",
             invalid_or_expired_pass: "通行證已失效，請學員重新開啟。",
-            active_enrollment_required: "搵唔到有效報名記錄。",
-            lesson_session_mismatch: "通行證唔屬於呢個場次。",
-            not_checked_in: "呢位學員未有入場記錄，未能簽退。",
-            already_checked_out: "呢位學員已經完成離場記錄。",
+            active_enrollment_required: "找不到有效報名記錄。",
+            lesson_session_mismatch: "通行證不屬於這個場次。",
+            not_checked_in: "這位學員未有入場記錄，未能簽退。",
+            already_checked_out: "這位學員已經完成離場記錄。",
           };
           throw new Error(errors[payload.error ?? ""] ?? "簽到失敗，請再試。");
         }
@@ -139,7 +139,7 @@ export function CheckInScanner({
       );
 
       if (!window.BarcodeDetector) {
-        setMessage("呢個瀏覽器未支援自動掃碼；請用下面手動輸入。");
+        setMessage("這個瀏覽器不支援自動掃碼；請在下方手動輸入。");
         return;
       }
       const detector = new window.BarcodeDetector({ formats: ["qr_code"] });

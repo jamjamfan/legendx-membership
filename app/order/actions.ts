@@ -54,7 +54,7 @@ export async function uploadPaymentProof(formData: FormData) {
     .maybeSingle();
   if (!order) {
     redirect(
-      `/order/${parsed.data.orderId}?error=${encodeURIComponent("訂單現時唔需要付款證明")}`,
+      `/order/${parsed.data.orderId}?error=${encodeURIComponent("訂單目前毋須提交付款證明")}`,
     );
   }
 

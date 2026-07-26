@@ -72,7 +72,7 @@ export default async function CheckoutPage({
       <div className="checkout-shell">
         <section className="checkout-form">
           <p className="eyebrow">Checkout · Stage {stage}</p>
-          <h1>確認場次同付款方式</h1>
+          <h1>確認場次及付款方式</h1>
           <p className="checkout-intro">
             系統會先保留座位；Stripe 30 分鐘，FPS／人工收款 24 小時。
           </p>
@@ -165,7 +165,7 @@ export default async function CheckoutPage({
             </SubmitButton>
             <p className="checkout-security">
               <LockKeyhole size={14} aria-hidden />
-              正式信用卡資料唔會經過 LegendX 伺服器。
+              正式信用卡資料不會經過 LegendX 伺服器。
             </p>
           </form>
         </section>

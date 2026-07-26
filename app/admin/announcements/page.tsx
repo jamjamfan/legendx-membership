@@ -22,7 +22,7 @@ export default async function AdminAnnouncementsPage({
     ? [
         {
           id: "demo",
-          title: "8 月班上堂準備",
+          title: "8 月班上課準備",
           detail: "會員中心 17/17 · Email 17/17 · WhatsApp 12/12",
         },
       ]
@@ -63,7 +63,7 @@ export default async function AdminAnnouncementsPage({
           <div>
             <p className="eyebrow">Announcements</p>
             <h1>場次公告</h1>
-            <p>經會員中心、電郵同已同意嘅 WhatsApp 發送。</p>
+            <p>經會員中心、電郵及已獲同意的 WhatsApp 發送。</p>
           </div>
         </div>
         {query.error && <div className="form-alert is-error">{query.error}</div>}
@@ -94,7 +94,7 @@ export default async function AdminAnnouncementsPage({
                 <span>標題</span>
                 <input
                   name="title"
-                  placeholder="例如：上堂地點及準備事項"
+                  placeholder="例如：上課地點及準備事項"
                   required
                 />
               </label>
@@ -114,7 +114,7 @@ export default async function AdminAnnouncementsPage({
                 </label>
                 <label>
                   <input name="channels" type="checkbox" value="whatsapp" />
-                  <span>WhatsApp（只發送俾已同意會員）</span>
+                  <span>WhatsApp（只發送給已同意的會員）</span>
                 </label>
               </fieldset>
               <button className="button button-dark" type="submit">

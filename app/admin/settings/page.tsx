@@ -33,7 +33,7 @@ export default async function AdminSettingsPage({
           <div>
             <p className="eyebrow">Settings</p>
             <h1>系統設定</h1>
-            <p>會影響商業規則嘅設定全部保留修改人同時間。</p>
+            <p>所有影響商業規則的設定均會保留修改人及時間。</p>
           </div>
         </div>
         {query.error && <div className="form-alert is-error">{query.error}</div>}
@@ -77,8 +77,8 @@ export default async function AdminSettingsPage({
           </div>
           <div className="setting-row">
             <div>
-              <strong>上堂提醒</strong>
-              <small>每堂分別喺以下時間建立通知工作</small>
+              <strong>上課提醒</strong>
+              <small>每堂分別在以下時間建立通知工作</small>
             </div>
             <span className="setting-value">T−1 日 · T−3 小時</span>
           </div>

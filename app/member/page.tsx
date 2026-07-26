@@ -140,8 +140,8 @@ export default async function MemberDashboardPage() {
     member.highestCompletedStage >= 2
       ? "第二階段已完成，傳承階段等緊你。"
       : member.highestCompletedStage === 1
-        ? "財商藍圖完成，下一步將方法落到實踐。"
-        : "由財技班開始，建立一套屬於你嘅時間自由系統。";
+        ? "財商藍圖完成，下一步將方法付諸實踐。"
+        : "從財技班開始，建立一套屬於你的時間自由系統。";
 
   return (
     <PortalShell
@@ -154,7 +154,7 @@ export default async function MemberDashboardPage() {
           <div>
             <p className="eyebrow">Member dashboard</p>
             <h1>你好，{member.displayName}。</h1>
-            <p>下一堂、訂單同獎學金進度，全部已經幫你排好。</p>
+            <p>下一堂課、訂單及獎學金進度，全部已為你妥善安排。</p>
           </div>
           <div className="portal-actions">
             <Link className="button button-outline" href="/member/pass">
@@ -173,7 +173,7 @@ export default async function MemberDashboardPage() {
             <p className="eyebrow">Your LegendX path</p>
             <h2>{pathHeadline}</h2>
             <p>
-              你已經建立方法同實踐成果。報讀第三階段，可以整合個人路線，並再獲得兩個獎學金名額。
+              你已經建立方法及實踐成果。報讀第三階段後，可以整合個人路線，並再獲得兩個獎學金名額。
             </p>
             <Link className="button button-primary" href={`/course/${nextStage}`}>
               了解下一階段
@@ -211,7 +211,7 @@ export default async function MemberDashboardPage() {
           <article className="metric-card">
             <small>獎學金名額</small>
             <span className="metric-value">{remainingSlots} / {totalSlots}</span>
-            <span className="metric-note">目前仍然有效嘅獎學金名額</span>
+            <span className="metric-note">目前仍然有效的獎學金名額</span>
           </article>
           <article className="metric-card">
             <small>待結算獎學金</small>

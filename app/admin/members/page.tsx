@@ -95,7 +95,7 @@ export default async function AdminMembersPage({
           <div>
             <p className="eyebrow">Members</p>
             <h1>會員管理</h1>
-            <p>會員階段、介紹人、聯絡資料同累計獎學金。</p>
+            <p>會員階段、介紹人、聯絡資料及累計獎學金。</p>
           </div>
           <div className="portal-actions">
             <Link

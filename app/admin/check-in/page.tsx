@@ -52,7 +52,7 @@ export default async function AdminCheckInPage({
             <p className="eyebrow">Secure attendance</p>
             <h1>掃碼記錄出席</h1>
             <p>
-              {sessionTitle} · 用手機或電腦瀏覽器開啟本頁，先揀入場或離場，再掃學員通行證。
+              {sessionTitle} · 使用手機或電腦瀏覽器開啟本頁，先選擇入場或離場，再掃描學員通行證。
             </p>
           </div>
         </div>

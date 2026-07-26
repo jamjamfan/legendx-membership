@@ -98,7 +98,7 @@ export default async function MemberOrdersPage({
           <div>
             <p className="eyebrow">My orders</p>
             <h1>訂單記錄</h1>
-            <p>付款狀態同正式收據集中喺呢度。</p>
+            <p>付款狀態及正式收據均集中顯示於此。</p>
           </div>
         </div>
         {memberRefundsEnabled && query.error && (

@@ -27,19 +27,19 @@ const experiences = [
   {
     icon: QrCode,
     title: "一張通行證，帶你入課室",
-    body: "會員中心集中場次、倒數、完整地址同 QR 通行證；到場出示即可簽到。",
+    body: "會員中心集中顯示場次、倒數、完整地址及 QR 通行證；到場出示即可簽到。",
     mark: "QR",
   },
   {
     icon: CalendarDays,
     title: "每一步，都準時提醒",
-    body: "上堂前一日同三小時收到提醒，亦可以一撳加入自己嘅行事曆。",
+    body: "上課前一日及三小時收到提醒，亦可一按加入自己的行事曆。",
     mark: "T−",
   },
   {
     icon: Users,
-    title: "分享唔靠估，成果睇得到",
-    body: "專屬推廣頁、QR 同清晰數據，查詢、報名、付款同獎學金進度一目了然。",
+    title: "分享不靠估計，成果清晰可見",
+    body: "專屬推廣頁、QR 及清晰數據，查詢、報名、付款及獎學金進度一目了然。",
     mark: "3+2",
   },
 ] as const;
@@ -86,7 +86,7 @@ export default function HomePage() {
               </h1>
               <p className="hero-lede">
                 LegendX
-                將探索、實踐同傳承連成一條完整路線。你得到嘅唔止係課堂，而係一套可以一路行、一路驗證嘅成長系統。
+                將探索、實踐及傳承連成一條完整路線。你獲得的不只是課堂，而是一套可以持續實踐及驗證的成長系統。
               </p>
               <div className="hero-actions">
                 <Link className="button button-primary" href="/course/1">
@@ -94,7 +94,7 @@ export default function HomePage() {
                   <ArrowRight size={17} aria-hidden />
                 </Link>
                 <Link className="button button-secondary" href="#programme">
-                  睇清三階段
+                  了解三個階段
                 </Link>
               </div>
               <p className="hero-note">
@@ -111,10 +111,10 @@ export default function HomePage() {
             <div className="section-heading">
               <div>
                 <p className="eyebrow">The programme</p>
-                <h2>三個階段，唔係三個散開嘅課程。</h2>
+                <h2>三個階段，並非三個分散的課程。</h2>
               </div>
               <p>
-                每個階段都有清楚目的、成果同下一步。由財商覺醒同時間自由藍圖，到將方法變成成果，再把你累積嘅價值傳落去。
+                每個階段均有清晰目的、成果及下一步。從財商覺醒及時間自由藍圖，到將方法轉化為成果，再把你累積的價值傳承下去。
               </p>
             </div>
             <div className="stage-grid">
@@ -129,9 +129,9 @@ export default function HomePage() {
           <div className="shell scholarship-grid">
             <div className="scholarship-copy">
               <p className="eyebrow">LegendX scholarship</p>
-              <h2>將你嘅推薦，變成下一位學員嘅起點。</h2>
+              <h2>將你的推薦，成為下一位學員的起點。</h2>
               <p>
-                完成進階後，你會獲得清晰、有時限嘅獎學金名額。朋友用你嘅介紹碼開始第一階段，佢享有介紹價；你嘅回贈亦會逐筆記錄、透明結算。
+                完成進階階段後，你將獲得清晰、有時限的獎學金名額。朋友使用你的介紹碼開始第一階段，可享有介紹價；你的回贈亦會逐筆記錄並透明結算。
               </p>
             </div>
 
@@ -163,10 +163,10 @@ export default function HomePage() {
             <div className="section-heading">
               <div>
                 <p className="eyebrow">Member experience</p>
-                <h2>課前、上堂、分享，都喺同一個地方。</h2>
+                <h2>課前、上課及分享，均在同一平台完成。</h2>
               </div>
               <p>
-                會員中心唔係放資料嘅倉庫，而係你每次返嚟都知道「下一步做咩」嘅個人控制台。
+                會員中心並非只是存放資料的地方，而是讓你每次登入後均能掌握下一步的個人控制台。
               </p>
             </div>
             <div className="experience-grid">
@@ -191,12 +191,12 @@ export default function HomePage() {
 
         <section className="section closing">
           <div className="shell closing-content">
-            <h2>你嘅第一步，唔需要等到準備十足。</h2>
+            <h2>你的第一步，毋須等待至準備十足。</h2>
             <p>
-              先用三個晚上，將七種財務決策砌成你自己嘅時間自由系統。有人介紹你？帶埋介紹碼，報名時會自動套用專屬價。
+              先用三個晚上，將七種財務決策整合成自己的時間自由系統。如由朋友介紹，使用介紹碼報名時將自動套用專屬價格。
             </p>
             <Link className="button button-primary" href="/course/1">
-              睇財技班完整內容
+              查看財技班完整內容
               <ArrowRight size={17} aria-hidden />
             </Link>
           </div>

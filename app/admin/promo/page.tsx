@@ -35,7 +35,7 @@ export default async function AdminPromoPage({
           <div>
             <p className="eyebrow">Promo content</p>
             <h1>推廣頁內容</h1>
-            <p>結構化欄位、版本記錄同發佈預覽；唔接受任意 HTML。</p>
+            <p>結構化欄位、版本記錄及發佈預覽；不接受任意 HTML。</p>
           </div>
           <div className="portal-actions">
             <Link
@@ -85,7 +85,7 @@ export default async function AdminPromoPage({
               <label>
                 <span>賣點 2</span>
                 <input
-                  defaultValue={benefits[1] ?? "將方法落到成果"}
+                  defaultValue={benefits[1] ?? "將方法轉化為成果"}
                   name="benefit2"
                   required
                 />
@@ -94,7 +94,7 @@ export default async function AdminPromoPage({
                 <span>賣點 3</span>
                 <input
                   defaultValue={
-                    benefits[2] ?? "獲得可追蹤嘅獎學金名額"
+                    benefits[2] ?? "獲得可追蹤的獎學金名額"
                   }
                   name="benefit3"
                   required
@@ -105,7 +105,7 @@ export default async function AdminPromoPage({
                 <textarea
                   defaultValue={
                     current?.brand_story ??
-                    "LegendX 相信，真正有價值嘅學習，會由個人成長一路延伸到成就身邊嘅人。"
+                    "LegendX 相信，真正有價值的學習，會從個人成長延伸至成就身邊的人。"
                   }
                   name="brandStory"
                   required

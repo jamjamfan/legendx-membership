@@ -16,6 +16,7 @@ export default async function LoginPage({
     error?: string;
     message?: string;
     next?: string;
+    unconfirmed?: string;
   }>;
 }) {
   const query = await searchParams;
@@ -28,9 +29,9 @@ export default async function LoginPage({
         </Link>
         <div>
           <p className="eyebrow">Member access</p>
-          <h1>返到你嘅 LegendX 路線。</h1>
+          <h1>返回你的 LegendX 學習路線。</h1>
           <p>
-            課程、訂單、通行證同獎學金進度，都會留喺你上次離開嘅位置。
+            課程、訂單、通行證及獎學金進度，均會保留在你上次離開的位置。
           </p>
         </div>
         <span className="auth-trust">
@@ -47,7 +48,7 @@ export default async function LoginPage({
           </Link>
           <p className="eyebrow">Sign in</p>
           <h2>會員登入</h2>
-          <p className="auth-intro">輸入註冊電郵同密碼，繼續你嘅課程。</p>
+          <p className="auth-intro">輸入登記電郵及密碼，繼續你的課程。</p>
 
           {query.error && <div className="form-alert is-error">{query.error}</div>}
           {query.message && (
@@ -86,35 +87,37 @@ export default async function LoginPage({
             未有帳戶？ <Link href="/register">建立帳戶</Link>
           </p>
           <p className="auth-switch auth-account-note">
-            已經建立過帳戶？請用上面表格直接登入，唔需要重新開戶。
+            已經建立帳戶？請使用上方表格直接登入，毋須重新登記。
           </p>
 
-          <div className="resend-access">
-            <span>驗證連結過期或開唔到？</span>
-            <form action={resendConfirmation} className="form-stack">
-              <input name="next" type="hidden" value={query.next ?? "/member"} />
-              <label>
-                <span>註冊電郵</span>
-                <input
-                  autoComplete="email"
-                  name="email"
-                  placeholder="name@example.com"
-                  required
-                  type="email"
-                />
-              </label>
-              <SubmitButton
-                className="table-action"
-                pendingLabel="正在重新發送…"
-              >
-                重新發送驗證電郵
-              </SubmitButton>
-            </form>
-          </div>
+          {query.unconfirmed === "1" && (
+            <div className="resend-access">
+              <span>帳戶仍未完成驗證？</span>
+              <form action={resendConfirmation} className="form-stack">
+                <input name="next" type="hidden" value={query.next ?? "/member"} />
+                <label>
+                  <span>登記電郵</span>
+                  <input
+                    autoComplete="email"
+                    name="email"
+                    placeholder="name@example.com"
+                    required
+                    type="email"
+                  />
+                </label>
+                <SubmitButton
+                  className="table-action"
+                  pendingLabel="正在重新發送…"
+                >
+                  重新發送驗證電郵
+                </SubmitButton>
+              </form>
+            </div>
+          )}
 
           {isDemoMode() && (
             <div className="demo-access">
-              <span>而家係開發預覽，可以直接試用</span>
+              <span>目前是開發預覽版本，可以直接試用</span>
               <div>
                 <form action={signInDemo}>
                   <input name="role" type="hidden" value="member" />

@@ -169,7 +169,7 @@ export default async function CoursePage({
                     </>
                   ) : (
                     <>
-                      揀場次並報名
+                      選擇場次並報名
                       <ArrowRight size={16} aria-hidden />
                     </>
                   )}
@@ -182,7 +182,7 @@ export default async function CoursePage({
                     target="_blank"
                   >
                     <MessageCircleMore size={16} aria-hidden />
-                    WhatsApp 留位
+                    WhatsApp 預留名額
                   </a>
                 )}
               </div>
@@ -196,14 +196,14 @@ export default async function CoursePage({
               <div>
                 <p className="eyebrow">Your time-freedom system</p>
                 <h2>
-                  唔係賭一個機會，
+                  並非賭一個機會，
                   <br />
-                  係砌出一套會運行嘅系統。
+                  而是建立一套能夠運行的系統。
                 </h2>
                 <p>
-                  逐步令收入唔再完全依賴每日上班。課堂以每月
+                  逐步讓收入不再完全依賴每日上班。課堂以每月
                   HK$30,000
-                  作為規劃目標，將每個組件拆開計算、排序同驗證。
+                  作為規劃目標，將每個組件逐一計算、排序及驗證。
                 </p>
                 <div className="system-chip-list" aria-label="時間自由系統組件">
                   {financialSystem.map((item) => (
@@ -226,8 +226,8 @@ export default async function CoursePage({
             <p className="eyebrow">What you will build</p>
             <h2>
               {course.stage === 1
-                ? "三個晚上，畫出你自己嘅時間自由路線。"
-                : "完成呢個階段，你會帶走嘅唔止係筆記。"}
+                ? "三個晚上，規劃屬於自己的時間自由路線。"
+                : "完成這個階段，你所獲得的不只是筆記。"}
             </h2>
             <div className="outcome-list">
               {course.outcomes.map((outcome, index) => (
@@ -242,10 +242,10 @@ export default async function CoursePage({
             <Sparkles size={22} aria-hidden />
             <p>
               {course.stage === 1
-                ? "唔係唔使工作，亦唔係即時退休；係由今日開始，逐步建立唔只靠出賣時間嘅收入結構。"
+                ? "並非毋須工作，亦非即時退休；而是從今天開始，逐步建立不只依靠出售時間的收入結構。"
                 : course.stage === 2
-                  ? "第二階段將方法帶入真實情境，用練習同回饋縮短「明白」同「做到」之間嘅距離。"
-                  : "第三階段將個人成果整理成可以分享、帶領同傳承嘅價值。"}
+                  ? "第二階段將方法應用於真實情境，透過練習及回饋縮短「明白」與「做到」之間的距離。"
+                  : "第三階段將個人成果整理為可以分享、帶領及傳承的價值。"}
             </p>
           </aside>
         </section>
@@ -259,8 +259,8 @@ export default async function CoursePage({
                   <h2>三晚課程，每一晚完成一塊藍圖。</h2>
                 </div>
                 <p>
-                  每晚 19:00–22:30，由財商覺醒、收入公式，一路行到 AI
-                  微創業同可計算嘅行動路線。
+                  每晚 19:00–22:30，從財商覺醒、收入公式，逐步延伸至 AI
+                  微創業及可計算的行動路線。
                 </p>
               </div>
               <div className="lesson-card-grid">
@@ -283,7 +283,7 @@ export default async function CoursePage({
                 ))}
               </div>
               <p className="finance-disclaimer">
-                教學內容只供教育及一般資訊用途，唔構成投資、借貸或財務建議；課堂提及嘅收入數字係規劃示例及學習目標，唔代表或保證任何實際收入或投資回報。
+                教學內容只供教育及一般資訊用途，不構成投資、借貸或財務建議；課堂提及的收入數字均為規劃示例及學習目標，不代表或保證任何實際收入或投資回報。
               </p>
             </div>
           </section>
@@ -296,14 +296,14 @@ export default async function CoursePage({
                 <p className="eyebrow">Upcoming sessions</p>
                 <h2>
                   {course.stage === 1
-                    ? "揀財技 3 班或財技 4 班。"
-                    : "揀一個適合你嘅場次。"}
+                    ? "選擇財技 3 班或財技 4 班。"
+                    : "選擇一個適合你的場次。"}
                 </h2>
               </div>
               <p>
                 {course.stage === 1
                   ? `${STAGE_ONE_VENUE} · ${STAGE_ONE_TRANSIT}`
-                  : "完整課室地址會喺付款確認後，顯示喺會員中心同課堂通行證。"}
+                  : "完整課室地址將於付款確認後，顯示在會員中心及課堂通行證。"}
               </p>
             </div>
 
@@ -361,7 +361,7 @@ export default async function CoursePage({
                           已報名 · 查看訂單
                         </>
                       ) : session.seatsRemaining > 0 ? (
-                        "報讀呢一班"
+                        "報讀這一班"
                       ) : (
                         "加入候補"
                       )}
@@ -372,7 +372,7 @@ export default async function CoursePage({
                 <div className="empty-state">
                   <CalendarDays size={24} aria-hidden />
                   <h3>新場次準備中</h3>
-                  <p>你可以先建立帳戶；有新場次時會喺會員中心見到。</p>
+                  <p>你可以先建立帳戶；新場次將顯示於會員中心。</p>
                   <Link className="button button-dark" href="/register">
                     建立帳戶
                   </Link>

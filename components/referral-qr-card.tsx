@@ -24,7 +24,7 @@ export function ReferralQrCard({
       </div>
       <div>
         <strong>掃碼用介紹價報名</strong>
-        <small>朋友用手機相機掃描，會直接打開你嘅專屬介紹頁。</small>
+        <small>朋友使用手機相機掃描後，將直接開啟你的專屬介紹頁。</small>
       </div>
     </div>
   );

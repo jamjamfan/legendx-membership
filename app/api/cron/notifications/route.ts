@@ -58,8 +58,8 @@ function lessonEmail(payload: NotificationPayload): {
     [payload.venueName, payload.area].filter(Boolean).join(" · "),
   );
   return {
-    subject: `LegendX 上堂提醒｜${sessionTitle}`,
-    html: `<div style="font-family:Arial,sans-serif;line-height:1.7;color:#071827"><h2>${displayName}，準備好下一堂。</h2><p><strong>${lessonTitle}</strong></p><p>${startsAt}<br>${venue}</p><p>完整資料同課堂通行證已放喺會員中心。</p></div>`,
+    subject: `LegendX 上課提醒｜${sessionTitle}`,
+    html: `<div style="font-family:Arial,sans-serif;line-height:1.7;color:#071827"><h2>${displayName}，請準備參與下一堂課。</h2><p><strong>${lessonTitle}</strong></p><p>${startsAt}<br>${venue}</p><p>完整資料及課堂通行證已上載至會員中心。</p></div>`,
   };
 }
 

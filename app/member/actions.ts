@@ -71,7 +71,7 @@ export async function submitReview(formData: FormData) {
   });
   if (!parsed.success) {
     redirect(
-      `/member/reviews?error=${encodeURIComponent("請選擇星級同填寫評語")}`,
+      `/member/reviews?error=${encodeURIComponent("請選擇星級並填寫評語")}`,
     );
   }
 

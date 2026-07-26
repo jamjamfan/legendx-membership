@@ -52,15 +52,15 @@ export default async function RegisterPage({
         </Link>
         <div>
           <p className="eyebrow">Begin your path</p>
-          <h1>由一個清楚嘅起點開始。</h1>
+          <h1>從一個清晰的起點開始。</h1>
           <ul className="auth-benefits">
             <li>
               <Check size={16} aria-hidden />
-              報名、付款同退款進度
+              報名及付款進度
             </li>
             <li>
               <Check size={16} aria-hidden />
-              課堂提醒、行事曆同 QR 通行證
+              課堂提醒、行事曆及 QR 通行證
             </li>
             <li>
               <Check size={16} aria-hidden />
@@ -69,7 +69,7 @@ export default async function RegisterPage({
           </ul>
         </div>
         <span className="auth-trust">
-          你可以獨立選擇係咪接收課程推廣訊息。
+          課堂時間、場地及變更通知會協助你掌握最新安排。
         </span>
       </section>
 
@@ -81,7 +81,7 @@ export default async function RegisterPage({
           </Link>
           <p className="eyebrow">Create account</p>
           <h2>建立 LegendX 帳戶</h2>
-          <p className="auth-intro">完成後會帶你去第 {stage} 階段報名。</p>
+          <p className="auth-intro">完成後將前往第 {stage} 階段報名。</p>
 
           {query.error && <div className="form-alert is-error">{query.error}</div>}
 
@@ -145,14 +145,22 @@ export default async function RegisterPage({
               )}
             </label>
             <fieldset className="consent-fields">
-              <legend>推廣訊息選擇（唔影響報名）</legend>
+              <legend>提醒及通知上課時間及更改時間</legend>
               <label>
-                <input name="marketingEmailConsent" type="checkbox" />
-                <span>我願意經電郵接收 LegendX 課程資訊</span>
+                <input
+                  defaultChecked
+                  name="marketingEmailConsent"
+                  type="checkbox"
+                />
+                <span>我願意經電郵接收 LegendX 上課時間及課程資訊</span>
               </label>
               <label>
-                <input name="marketingWhatsappConsent" type="checkbox" />
-                <span>我願意經 WhatsApp 接收 LegendX 課程資訊</span>
+                <input
+                  defaultChecked
+                  name="marketingWhatsappConsent"
+                  type="checkbox"
+                />
+                <span>我願意經 WhatsApp 接收 LegendX 上課時間及課程資訊</span>
               </label>
             </fieldset>
             <p className="form-legal">

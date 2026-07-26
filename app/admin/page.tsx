@@ -92,7 +92,7 @@ export default async function AdminDashboardPage() {
           id: "demo-inquiry",
           kind: "inquiry",
           title: "新查詢 · 張小姐",
-          detail: "想了解第一階段 8 月班係咪仲有位",
+          detail: "想了解第一階段 8 月班是否尚有名額",
           href: "/admin/inquiries",
         },
       ]
@@ -239,7 +239,7 @@ export default async function AdminDashboardPage() {
           <div>
             <p className="eyebrow">Operations dashboard</p>
             <h1>營運總覽</h1>
-            <p>今日需要處理嘅收款、退款、獎學金同查詢。</p>
+            <p>今天需要處理的收款、退款、獎學金及查詢。</p>
           </div>
           <div className="portal-actions">
             {demo && (
@@ -294,7 +294,7 @@ export default async function AdminDashboardPage() {
             <div className="panel-header">
               <div>
                 <h2>需要處理</h2>
-                <p>按優先次序顯示嘅營運佇列</p>
+                <p>按優先次序顯示的營運佇列</p>
               </div>
               <Link className="panel-link" href="/admin/orders">
                 全部工作
@@ -326,8 +326,8 @@ export default async function AdminDashboardPage() {
             ) : (
               <div className="empty-state">
                 <ReceiptText size={22} aria-hidden />
-                <h3>目前冇待處理項目</h3>
-                <p>新付款、退款或查詢出現時會顯示喺呢度。</p>
+                <h3>目前沒有待處理項目</h3>
+                <p>新付款、退款或查詢出現時將顯示於此。</p>
               </div>
             )}
           </section>
@@ -365,7 +365,7 @@ export default async function AdminDashboardPage() {
               <div className="empty-state">
                 <CalendarDays size={22} aria-hidden />
                 <h3>未有公開場次</h3>
-                <p>建立並發佈場次後，容量會喺呢度更新。</p>
+                <p>建立並發佈場次後，容量將於此更新。</p>
               </div>
             )}
           </section>
@@ -375,7 +375,7 @@ export default async function AdminDashboardPage() {
           <div className="panel-header">
             <div>
               <h2>最近活動</h2>
-              <p>訂單同查詢更新</p>
+              <p>訂單及查詢更新</p>
             </div>
           </div>
           <div className="data-table-wrap">

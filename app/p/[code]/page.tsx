@@ -65,10 +65,10 @@ export default async function PromoPage({
   const headline = promoContent?.headline ?? "從財商覺醒，到時間自由";
   const subheadline =
     promoContent?.subheadline ??
-    "將賺錢、理錢、投資、借貸、生活成本、AI 微創業同被動收入，砌成一套屬於你嘅系統。";
+    "將賺錢、理財、投資、借貸、生活成本、AI 微創業及被動收入，整合成一套屬於你的系統。";
   const brandStory =
     promoContent?.brand_story ??
-    "唔係唔使工作，亦唔係即時退休；係逐步令收入唔再完全依賴每日上班。";
+    "並非毋須工作，亦非即時退休；而是逐步讓收入不再完全依賴每日上班。";
   const benefits = Array.isArray(promoContent?.benefits)
     ? (promoContent.benefits.filter(
         (item): item is string => typeof item === "string",
@@ -105,7 +105,7 @@ export default async function PromoPage({
           <h1>
             {headline}，
             <br />
-            <em>值得同你分享。</em>
+            <em>值得與你分享。</em>
           </h1>
           <p>{referrer} 誠意推薦你認識 LegendX。{subheadline}</p>
           <div className="promo-price">
@@ -116,7 +116,7 @@ export default async function PromoPage({
           <div className="promo-cta-stack">
             {registration && (
               <div className="form-alert is-success">
-                你已經報讀第一階段，唔需要再次付款。
+                你已經報讀第一階段，毋須再次付款。
               </div>
             )}
             <Link
@@ -132,7 +132,7 @@ export default async function PromoPage({
                 </>
               ) : (
                 <>
-                  用呢個介紹碼開始
+                  使用此介紹碼開始
                   <ArrowRight size={16} aria-hidden />
                 </>
               )}
@@ -145,7 +145,7 @@ export default async function PromoPage({
                 target="_blank"
               >
                 <MessageCircleMore size={16} aria-hidden />
-                WhatsApp 留位
+                WhatsApp 預留名額
               </a>
             )}
           </div>
@@ -164,10 +164,10 @@ export default async function PromoPage({
           <div className="section-heading">
             <div>
               <p className="eyebrow">Three-stage path</p>
-              <h2>由睇清方向，到建立影響力。</h2>
+              <h2>從看清方向，到建立影響力。</h2>
             </div>
             <p>
-              三個階段彼此相連，每一步都有清晰成果，亦知道下一步點行。
+              三個階段彼此相連，每一步均有清晰成果，亦能掌握下一步方向。
             </p>
           </div>
           <div className="promo-stage-list">
@@ -191,10 +191,9 @@ export default async function PromoPage({
         <div className="shell promo-inquiry-grid">
           <div>
             <p className="eyebrow">Ask first</p>
-            <h2>未決定報名？先留低你想問嘅嘢。</h2>
+            <h2>尚未決定報名？請先留下你想了解的內容。</h2>
             <p>
-              查詢會歸屬推薦你嘅會員，並由 LegendX
-              職員跟進。你唔需要先建立帳戶。
+              LegendX 職員會聯絡你並作跟進。
             </p>
             <span>
               <ShieldCheck size={16} aria-hidden />
@@ -218,28 +217,33 @@ export default async function PromoPage({
             {query.error && <div className="form-alert is-error">{query.error}</div>}
             <label>
               <span>姓名</span>
-              <input name="name" placeholder="點稱呼你？" required />
+              <input name="name" placeholder="你的稱呼" required />
             </label>
             <label>
               <span>電話</span>
               <input name="phone" placeholder="香港流動電話" required type="tel" />
             </label>
             <label>
-              <span>想了解咩？</span>
+              <span>想了解甚麼？</span>
               <textarea
                 name="message"
-                placeholder="例如：想問 8 月班上堂時間"
+                placeholder="例如：想查詢 8 月班的上課時間"
               />
             </label>
             <label className="inline-check">
-              <input name="privacyAccepted" required type="checkbox" />
+              <input
+                defaultChecked
+                name="privacyAccepted"
+                required
+                type="checkbox"
+              />
               <span>
                 我已閱讀並同意 <Link href="/privacy">收集個人資料聲明</Link>
               </span>
             </label>
             <label className="inline-check">
               <input name="marketingConsent" type="checkbox" />
-              <span>我願意接收日後課程推廣（選填）</span>
+              <span>我願意接收日後財富知識及課程優惠（選填）</span>
             </label>
             <button className="button button-dark" type="submit">
               <MessageCircleMore size={16} aria-hidden />

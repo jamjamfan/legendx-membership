@@ -117,7 +117,7 @@ export default async function AdminOrdersPage({
           <div>
             <p className="eyebrow">Orders & refunds</p>
             <h1>訂單與退款</h1>
-            <p>Stripe、FPS、人工收款同退款審批。</p>
+            <p>Stripe、FPS、人工收款及退款審批。</p>
           </div>
         </div>
         {query.error && <div className="form-alert is-error">{query.error}</div>}
@@ -248,7 +248,7 @@ export default async function AdminOrdersPage({
                 )}
                 {!demo && pendingOrders.length === 0 && refunds.length === 0 && (
                   <tr>
-                    <td colSpan={6}>暫時冇待處理訂單或退款。</td>
+                    <td colSpan={6}>暫時沒有待處理訂單或退款。</td>
                   </tr>
                 )}
               </tbody>

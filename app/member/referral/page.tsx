@@ -130,8 +130,8 @@ export default async function MemberReferralPage() {
         <div className="portal-heading">
           <div>
             <p className="eyebrow">My referrals</p>
-            <h1>我嘅介紹</h1>
-            <p>分享專屬頁面，追蹤每個名額同獎學金記錄。</p>
+            <h1>我的介紹</h1>
+            <p>分享專屬頁面，追蹤每個名額及獎學金記錄。</p>
           </div>
           <div className="portal-actions">
             <a className="button button-outline" href={promoUrl} target="_blank">

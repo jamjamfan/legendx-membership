@@ -133,7 +133,7 @@ export default async function MemberPassPage() {
             <div className="pass-security">
               <ShieldCheck size={18} aria-hidden />
               <p>
-                呢張通行證包含短期簽名資料；每次掃碼都會喺伺服器驗證會員、場次、課堂同簽到狀態。
+                這張通行證包含短期簽名資料；每次掃碼均會在伺服器驗證會員、場次、課堂及簽到狀態。
               </p>
             </div>
             <div className="action-cell">

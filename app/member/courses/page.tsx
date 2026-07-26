@@ -19,8 +19,8 @@ export default async function MemberCoursesPage() {
         <div className="portal-heading">
           <div>
             <p className="eyebrow">My courses</p>
-            <h1>我嘅課程</h1>
-            <p>已完成、進行中同可以升級嘅階段。</p>
+            <h1>我的課程</h1>
+            <p>已完成、進行中及可升級的階段。</p>
           </div>
         </div>
         <section className="portal-grid portal-grid-3">

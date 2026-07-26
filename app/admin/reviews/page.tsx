@@ -19,7 +19,7 @@ const reviews = [
     name: "何俊豪",
     rating: 4,
     course: "第二階段 · 6 月班",
-    comment: "實戰練習令我知道自己之前卡喺邊，亦有同學一齊互相提醒。",
+    comment: "實戰練習讓我了解自己過往遇到的困難，亦有同學一起互相提醒。",
     consent: true,
   },
   {
@@ -27,7 +27,7 @@ const reviews = [
     name: "匿名會員",
     rating: 3,
     course: "第一階段 · 7 月班",
-    comment: "內容實用，希望之後可以增加多一點練習時間。",
+    comment: "內容實用，希望日後可以增加更多練習時間。",
     consent: false,
   },
 ] as const;
@@ -102,7 +102,7 @@ export default async function AdminReviewsPage({
           <div>
             <p className="eyebrow">Reviews</p>
             <h1>課後評價</h1>
-            <p>只有 4 星以上兼已同意公開嘅評價可以展示。</p>
+            <p>只有 4 星以上並已同意公開的評價可以展示。</p>
           </div>
         </div>
         {query.error && <div className="form-alert is-error">{query.error}</div>}

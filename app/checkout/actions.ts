@@ -30,7 +30,7 @@ export async function createCheckoutOrder(
       ? submittedStage
       : 1;
     redirect(
-      `/checkout/${fallbackStage}?error=${encodeURIComponent("請選擇場次同付款方式")}`,
+      `/checkout/${fallbackStage}?error=${encodeURIComponent("請選擇場次及付款方式")}`,
     );
   }
 
@@ -83,14 +83,14 @@ export async function createCheckoutOrder(
           : error?.message.includes("invalid_referral")
             ? "介紹碼無效，請檢查後再試"
           : error?.message.includes("self_referral")
-            ? "唔可以使用自己嘅介紹碼"
+            ? "不可使用自己的介紹碼"
             : error?.message.includes("stage_one_required")
               ? "完成第一階段後先可以報讀第二階段"
             : error?.message.includes("stage_two_required")
               ? "完成第二階段後先可以報讀第三階段"
                 : error?.message.includes("active_order_exists") ||
                     error?.code === "23505"
-                  ? "你已有同階段有效訂單"
+                  ? "你已有相同階段的有效訂單"
                   : "未能建立訂單，請稍後再試";
     redirect(`/checkout/${stage}?error=${encodeURIComponent(reason)}`);
   }

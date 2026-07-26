@@ -57,26 +57,26 @@ function authErrorMessage(
   }
 
   if (error.code === "email_address_not_authorized") {
-    return "目前電郵服務未能寄到呢個地址；請聯絡 LegendX 協助處理。";
+    return "目前電郵服務未能寄送至這個地址；請聯絡 LegendX 協助處理。";
   }
 
   if (error.code === "email_address_invalid") {
-    return "呢個電郵地址未能使用，請檢查後再試。";
+    return "這個電郵地址未能使用，請檢查後再試。";
   }
 
   if (action === "sign-in" && error.code === "email_not_confirmed") {
-    return "呢個帳戶尚未完成電郵驗證，請在下方重新發送驗證電郵。";
+    return "這個帳戶尚未完成電郵驗證，請在下方重新發送驗證電郵。";
   }
 
   if (
     action === "sign-up" &&
     (error.code === "user_already_exists" || error.code === "email_exists")
   ) {
-    return "呢個電郵可能已經有帳戶，請直接登入，唔需要重新開戶。";
+    return "這個電郵可能已經建立帳戶，請直接登入，毋須重新登記。";
   }
 
   if (action === "sign-in") {
-    return "電郵或密碼不正確；如果你已經開過戶口，唔需要再次註冊。";
+    return "電郵或密碼不正確；如果你已經建立帳戶，毋須再次登記。";
   }
 
   if (action === "resend") {
@@ -95,7 +95,7 @@ export async function signIn(formData: FormData) {
 
   if (!parsed.success) {
     redirect(
-      `/login?error=${encodeURIComponent("請檢查電郵同密碼格式")}`,
+      `/login?error=${encodeURIComponent("請檢查電郵及密碼格式")}`,
     );
   }
 
@@ -121,8 +121,9 @@ export async function signIn(formData: FormData) {
   });
 
   if (error) {
+    const unconfirmed = error.code === "email_not_confirmed" ? "&unconfirmed=1" : "";
     redirect(
-      `/login?error=${encodeURIComponent(authErrorMessage("sign-in", error))}`,
+      `/login?error=${encodeURIComponent(authErrorMessage("sign-in", error))}${unconfirmed}`,
     );
   }
 
@@ -211,7 +212,7 @@ export async function signUp(
 
   if (data.user && data.user.identities?.length === 0) {
     redirect(
-      `/login?message=${encodeURIComponent("呢個電郵可能已經有帳戶；請直接登入，已確認帳戶唔會再收到 signup 驗證信。")}&next=${encodeURIComponent(checkoutPath)}`,
+      `/login?message=${encodeURIComponent("這個電郵可能已經建立帳戶；請直接登入。已確認的帳戶不會再次收到登記驗證電郵。")}&next=${encodeURIComponent(checkoutPath)}`,
     );
   }
 
@@ -255,7 +256,7 @@ export async function resendConfirmation(formData: FormData) {
   }
 
   redirect(
-    `/login?message=${encodeURIComponent("如果帳戶仍待驗證，我哋已重新發出驗證電郵；已確認帳戶唔會再收到 signup 信，請直接登入。")}&next=${encodeURIComponent(next)}`,
+    `/login?message=${encodeURIComponent("重新發送要求已提交。如果帳戶仍待驗證，請查收最新電郵；已確認的帳戶不會再次收到登記驗證電郵，請直接登入。")}&next=${encodeURIComponent(next)}`,
   );
 }
 

@@ -199,7 +199,7 @@ export default async function AdminSessionsPage({
           <div>
             <p className="eyebrow">Sessions & attendance</p>
             <h1>場次與出席</h1>
-            <p>開班、容量、候補、課堂日子同簽到。</p>
+            <p>開班、容量、候補、課堂日期及簽到。</p>
           </div>
           <div className="portal-actions">
             <Link
@@ -224,7 +224,7 @@ export default async function AdminSessionsPage({
             <div className="panel-header">
               <div>
                 <h2>新增正式場次</h2>
-                <p>時間以香港時區記錄；可同時建立 Zoom 會議。</p>
+                <p>時間以香港時區記錄；亦可同時建立 Zoom 會議。</p>
               </div>
             </div>
             <form action={createSession} className="form-stack form-grid-2">
@@ -270,7 +270,7 @@ export default async function AdminSessionsPage({
               </label>
               <label className="inline-check form-grid-span-2">
                 <input name="createZoom" type="checkbox" />
-                <span>同時建立 Zoom 會議（須已設定 Zoom）</span>
+                <span>同時建立 Zoom 會議（須先設定 Zoom）</span>
               </label>
               <button className="button button-dark" type="submit">
                 建立場次

@@ -31,7 +31,7 @@ export default async function WaitlistPage({
 
         {query.success ? (
           <div className="form-alert is-success">
-            <CircleCheck size={15} aria-hidden /> 已加入候補，我哋有位會通知你。
+            <CircleCheck size={15} aria-hidden /> 已加入候補，有名額時我們將通知你。
           </div>
         ) : (
           <form action={joinWaitlist} className="form-stack">

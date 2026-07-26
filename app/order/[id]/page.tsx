@@ -83,12 +83,12 @@ export default async function OrderPage({
         <h1>{pending ? "訂單已建立，等待確認付款。" : "報名完成，歡迎加入 LegendX。"}</h1>
         <p>
           {pending
-            ? "完成以下付款步驟後，職員會核對款項並確認你嘅座位。"
-            : "課程已經加入會員中心；你會喺上堂前收到提醒。"}
+            ? "完成以下付款步驟後，職員將核對款項並確認你的座位。"
+            : "課程已經加入會員中心；你將於上課前收到提醒。"}
         </p>
         {query.already && (
           <div className="form-alert is-success">
-            你已經有呢個階段嘅有效訂單，唔需要再次報名或付款。
+            你已經有這個階段的有效訂單，毋須再次報名或付款。
           </div>
         )}
         {query.error && <div className="form-alert is-error">{query.error}</div>}
@@ -141,7 +141,7 @@ export default async function OrderPage({
               <div>
                 <strong>請聯絡 LegendX 安排交收</strong>
                 <p>座位會保留 24 小時。</p>
-                <small>職員收款後會喺後台確認訂單。</small>
+                <small>職員收款後將於後台確認訂單。</small>
               </div>
             </div>
           )}
@@ -150,7 +150,7 @@ export default async function OrderPage({
               <CircleCheck size={20} aria-hidden />
               <div>
                 <strong>付款已由 Stripe webhook 確認</strong>
-                <p>收據同課程資料已經加入會員中心。</p>
+                <p>收據及課程資料已經加入會員中心。</p>
               </div>
             </div>
           )}

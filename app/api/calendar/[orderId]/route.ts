@@ -78,7 +78,7 @@ DTSTART:${icsDate(lesson.starts_at)}
 DTEND:${icsDate(lesson.ends_at)}
 SUMMARY:${escapeIcs(`${session.title} · ${lesson.title}`)}
 LOCATION:${escapeIcs(location)}
-DESCRIPTION:${escapeIcs(`LegendX 訂單 ${order.order_number}。請喺會員中心開啟課堂通行證。`)}
+DESCRIPTION:${escapeIcs(`LegendX 訂單 ${order.order_number}。請在會員中心開啟課堂通行證。`)}
 END:VEVENT`,
     )
     .join("\r\n");
