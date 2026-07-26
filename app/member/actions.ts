@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { memberRefundsEnabled } from "@/lib/features";
 import { isDemoMode } from "@/lib/runtime";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -12,6 +13,11 @@ const refundSchema = z.object({
 });
 
 export async function requestRefund(formData: FormData) {
+  if (!memberRefundsEnabled) {
+    redirect(
+      `/member/orders?error=${encodeURIComponent("退款申請功能暫未開放")}`,
+    );
+  }
   const parsed = refundSchema.safeParse({
     orderId: formData.get("orderId"),
     reason: formData.get("reason"),

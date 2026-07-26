@@ -1,5 +1,6 @@
 import { Download, Search } from "lucide-react";
 import Link from "next/link";
+import { advanceMemberStage } from "@/app/admin/actions";
 import { PortalShell } from "@/components/portal-shell";
 import { getStaffContext } from "@/lib/auth/staff";
 import { formatHkd } from "@/lib/domain/catalog";
@@ -12,7 +13,12 @@ const demoMembers = [
   ["黃志文", "chi.man@example.com", "6118 2234", "第一階段", "—", "$0"],
 ] as const;
 
-export default async function AdminMembersPage() {
+export default async function AdminMembersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; success?: string }>;
+}) {
+  const query = await searchParams;
   const context = await getStaffContext();
   const demo = isDemoMode() && !context;
   let members: Array<{
@@ -21,17 +27,21 @@ export default async function AdminMembersPage() {
     email: string;
     phone: string;
     stage: string;
+    completedStage: number;
     referrer: string;
     scholarship: string;
+    live: boolean;
   }> = demo
-    ? demoMembers.map((member) => ({
+    ? demoMembers.map((member, index) => ({
         id: member[1],
         name: member[0],
         email: member[1],
         phone: member[2],
         stage: member[3],
+        completedStage: index === 0 ? 2 : 1,
         referrer: member[4],
         scholarship: member[5],
+        live: false,
       }))
     : [];
 
@@ -64,10 +74,12 @@ export default async function AdminMembersPage() {
       email: profile.email,
       phone: profile.phone ?? "—",
       stage: stageNames[profile.highest_completed_stage] ?? "未開始",
+      completedStage: profile.highest_completed_stage,
       referrer: profile.referrer_id
         ? names.get(profile.referrer_id) ?? "LegendX 會員"
         : "—",
       scholarship: formatHkd((totals.get(profile.id) ?? 0) / 100),
+      live: true,
     }));
   }
 
@@ -94,6 +106,10 @@ export default async function AdminMembersPage() {
             </Link>
           </div>
         </div>
+        {query.error && <div className="form-alert is-error">{query.error}</div>}
+        {query.success && (
+          <div className="form-alert is-success">{query.success}</div>
+        )}
         <section className="panel">
           <div className="table-toolbar">
             <label>
@@ -131,9 +147,27 @@ export default async function AdminMembersPage() {
                     <td>{member.referrer}</td>
                     <td>{member.scholarship}</td>
                     <td>
-                      <button className="table-action" type="button">
-                        查看
-                      </button>
+                      {member.live && member.completedStage < 3 ? (
+                        <form action={advanceMemberStage}>
+                          <input
+                            name="memberId"
+                            type="hidden"
+                            value={member.id}
+                          />
+                          <input
+                            name="stage"
+                            type="hidden"
+                            value={member.completedStage + 1}
+                          />
+                          <button className="table-action" type="submit">
+                            測試完成第 {member.completedStage + 1} 階段
+                          </button>
+                        </form>
+                      ) : (
+                        <span className="status-badge status-neutral">
+                          {member.completedStage >= 3 ? "全部完成" : "示範資料"}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

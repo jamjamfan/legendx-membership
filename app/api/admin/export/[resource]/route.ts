@@ -76,10 +76,22 @@ export async function GET(
     const { data } = await context.admin
       .from("attendance_records")
       .select(
-        "member_id, lesson_id, method, checked_in_by, checked_in_at, note",
+        "member_id, lesson_id, method, checked_in_by, checked_in_at, checked_out_by, checked_out_at, note",
       )
       .order("checked_in_at");
-    rows = (data ?? []).map((item) => ({ ...item }));
+    rows = (data ?? []).map((item) => ({
+      ...item,
+      duration_minutes: item.checked_out_at
+        ? Math.max(
+            0,
+            Math.round(
+              (new Date(item.checked_out_at).getTime() -
+                new Date(item.checked_in_at).getTime()) /
+                60_000,
+            ),
+          )
+        : null,
+    }));
   }
 
   if (resource === "inquiries") {

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getStaffContext } from "@/lib/auth/staff";
+import { getRebateAttendanceStatus } from "@/lib/data/rebate-attendance";
 import { createStripeClient } from "@/lib/integrations/stripe";
 import { createZoomMeeting } from "@/lib/integrations/zoom";
 
@@ -157,6 +158,24 @@ export async function settleRebate(formData: FormData) {
   });
   if (!parsed.success) fail("/admin/rebates", "獎學金資料不正確");
   const { admin, actorId } = await requireStaff("/admin/rebates");
+  const { data: rebate } = await admin
+    .from("rebate_records")
+    .select("id, referred_order_id, referred_member_id, status")
+    .eq("id", parsed.data.id)
+    .eq("status", "pending")
+    .maybeSingle();
+  if (!rebate) fail("/admin/rebates", "獎學金已處理或不存在");
+  const attendance = await getRebateAttendanceStatus(
+    admin,
+    rebate.referred_order_id,
+    rebate.referred_member_id,
+  );
+  if (!attendance.eligible) {
+    fail(
+      "/admin/rebates",
+      `朋友尚未完成全部課堂入場及離場記錄（${attendance.completedLessons}/${attendance.totalLessons} 堂）`,
+    );
+  }
   const { error } = await admin.rpc("settle_rebate", {
     p_rebate_id: parsed.data.id,
     p_actor_id: actorId,
@@ -164,6 +183,55 @@ export async function settleRebate(formData: FormData) {
   });
   if (error) fail("/admin/rebates", "未能完成獎學金結算");
   done("/admin/rebates", "獎學金已標記過數並寫入帳本");
+}
+
+const advanceMemberStageSchema = z.object({
+  memberId: z.string().uuid(),
+  stage: z.coerce.number().int().min(1).max(3),
+});
+
+export async function advanceMemberStage(formData: FormData) {
+  const parsed = advanceMemberStageSchema.safeParse({
+    memberId: formData.get("memberId"),
+    stage: formData.get("stage"),
+  });
+  if (!parsed.success) fail("/admin/members", "會員階段資料不正確");
+  const { admin, actorId } = await requireStaff("/admin/members");
+  const { data: profile } = await admin
+    .from("profiles")
+    .select("id, display_name, highest_completed_stage")
+    .eq("id", parsed.data.memberId)
+    .maybeSingle();
+  if (!profile) fail("/admin/members", "會員不存在");
+  if (profile.highest_completed_stage >= parsed.data.stage) {
+    fail("/admin/members", "會員已經完成呢個階段");
+  }
+  if (parsed.data.stage > profile.highest_completed_stage + 1) {
+    fail("/admin/members", "只可以逐階段完成課程");
+  }
+
+  const { error } = await admin
+    .from("profiles")
+    .update({ highest_completed_stage: parsed.data.stage })
+    .eq("id", profile.id)
+    .eq("highest_completed_stage", profile.highest_completed_stage);
+  if (error) fail("/admin/members", "未能更新會員階段");
+
+  await admin.from("audit_logs").insert({
+    actor_id: actorId,
+    action: "member.stage_advance",
+    entity_type: "profile",
+    entity_id: profile.id,
+    before_data: { highest_completed_stage: profile.highest_completed_stage },
+    after_data: {
+      highest_completed_stage: parsed.data.stage,
+      method: "admin_override",
+    },
+  });
+  done(
+    "/admin/members",
+    `${profile.display_name} 已完成第 ${parsed.data.stage} 階段，可測試下一階段`,
+  );
 }
 
 const inquirySchema = z.object({

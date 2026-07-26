@@ -1,7 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Camera, CircleCheck, Keyboard, ScanLine } from "lucide-react";
+import {
+  Camera,
+  CircleCheck,
+  Keyboard,
+  LogIn,
+  LogOut,
+  ScanLine,
+} from "lucide-react";
 
 interface DetectedBarcode {
   rawValue: string;
@@ -33,6 +40,7 @@ export function CheckInScanner({
   const frameRef = useRef<number | null>(null);
   const busyRef = useRef(false);
   const [manualToken, setManualToken] = useState("");
+  const [mode, setMode] = useState<"check_in" | "check_out">("check_in");
   const [state, setState] = useState<
     "idle" | "starting" | "scanning" | "success" | "error"
   >("idle");
@@ -46,25 +54,40 @@ export function CheckInScanner({
         const response = await fetch("/api/check-in", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token, lessonId }),
+          body: JSON.stringify({ token, lessonId, action: mode }),
         });
-        const payload = (await response.json()) as { error?: string };
+        const payload = (await response.json()) as {
+          error?: string;
+          memberName?: string;
+          stageCompleted?: number | null;
+        };
         if (!response.ok) {
           const errors: Record<string, string> = {
             already_checked_in: "呢位學員已經簽到。",
             invalid_or_expired_pass: "通行證已失效，請學員重新開啟。",
             active_enrollment_required: "搵唔到有效報名記錄。",
             lesson_session_mismatch: "通行證唔屬於呢個場次。",
+            not_checked_in: "呢位學員未有入場記錄，未能簽退。",
+            already_checked_out: "呢位學員已經完成離場記錄。",
           };
           throw new Error(errors[payload.error ?? ""] ?? "簽到失敗，請再試。");
         }
         setState("success");
-        setMessage("簽到成功；可以繼續掃下一位。");
+        const actionLabel = mode === "check_in" ? "入場" : "離場";
+        setMessage(
+          `${payload.memberName ?? "學員"}${actionLabel}記錄成功。${
+            payload.stageCompleted
+              ? ` 已完成第 ${payload.stageCompleted} 階段並解鎖下一階段。`
+              : ""
+          }`,
+        );
         setManualToken("");
         window.setTimeout(() => {
           busyRef.current = false;
           setState("scanning");
-          setMessage("對準學員通行證 QR。");
+          setMessage(
+            `對準學員通行證 QR，記錄${mode === "check_in" ? "入場" : "離場"}。`,
+          );
         }, 1800);
       } catch (error) {
         setState("error");
@@ -75,7 +98,7 @@ export function CheckInScanner({
         }, 1800);
       }
     },
-    [lessonId],
+    [lessonId, mode],
   );
 
   const stopCamera = useCallback(() => {
@@ -84,6 +107,19 @@ export function CheckInScanner({
     streamRef.current = null;
     frameRef.current = null;
   }, []);
+
+  const selectMode = useCallback(
+    (nextMode: "check_in" | "check_out") => {
+      stopCamera();
+      busyRef.current = false;
+      setMode(nextMode);
+      setState("idle");
+      setMessage(
+        `已選擇記錄${nextMode === "check_in" ? "入場" : "離場"}；準備好後開啟相機。`,
+      );
+    },
+    [stopCamera],
+  );
 
   const startCamera = useCallback(async () => {
     setState("starting");
@@ -98,7 +134,9 @@ export function CheckInScanner({
       videoRef.current.srcObject = stream;
       await videoRef.current.play();
       setState("scanning");
-      setMessage("對準學員通行證 QR。");
+      setMessage(
+        `對準學員通行證 QR，記錄${mode === "check_in" ? "入場" : "離場"}。`,
+      );
 
       if (!window.BarcodeDetector) {
         setMessage("呢個瀏覽器未支援自動掃碼；請用下面手動輸入。");
@@ -117,7 +155,7 @@ export function CheckInScanner({
       setState("error");
       setMessage("未能使用相機；請允許權限，或者用手動輸入。");
     }
-  }, [checkIn]);
+  }, [checkIn, mode]);
 
   useEffect(() => stopCamera, [stopCamera]);
 
@@ -137,13 +175,31 @@ export function CheckInScanner({
       <div className="panel scanner-control">
         <p className="eyebrow">Selected lesson</p>
         <h2>{lessonTitle}</h2>
+        <div className="scanner-mode" role="group" aria-label="出席記錄模式">
+          <button
+            className={mode === "check_in" ? "is-active" : ""}
+            onClick={() => selectMode("check_in")}
+            type="button"
+          >
+            <LogIn size={16} aria-hidden />
+            記錄入場
+          </button>
+          <button
+            className={mode === "check_out" ? "is-active" : ""}
+            onClick={() => selectMode("check_out")}
+            type="button"
+          >
+            <LogOut size={16} aria-hidden />
+            記錄離場
+          </button>
+        </div>
         <p className={state === "error" ? "scanner-message is-error" : "scanner-message"}>
           {message}
         </p>
         {state === "idle" && (
           <button className="button button-dark" onClick={startCamera} type="button">
             <Camera size={16} aria-hidden />
-            開啟相機掃碼
+            開啟相機掃碼記錄{mode === "check_in" ? "入場" : "離場"}
           </button>
         )}
         <form
@@ -168,7 +224,7 @@ export function CheckInScanner({
             disabled={!manualToken.trim()}
             type="submit"
           >
-            手動簽到
+            手動記錄{mode === "check_in" ? "入場" : "離場"}
           </button>
         </form>
       </div>

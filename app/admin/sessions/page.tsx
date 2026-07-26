@@ -469,7 +469,7 @@ export default async function AdminSessionsPage({
                     href={`/admin/check-in?session=${session.id}`}
                   >
                     <QrCode size={13} aria-hidden />
-                    掃碼簽到
+                    掃碼記錄出席
                   </Link>
                   {(session.seatsRemaining === 0 ||
                     session.waitlistCount > 0) && (

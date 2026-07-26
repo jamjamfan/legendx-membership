@@ -6,6 +6,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { demoMember, demoOrders } from "@/lib/demo-data";
 import { formatHkd } from "@/lib/domain/catalog";
 import type { OrderStatus } from "@/lib/domain/models";
+import { memberRefundsEnabled } from "@/lib/features";
 import { isDemoMode } from "@/lib/runtime";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -97,11 +98,13 @@ export default async function MemberOrdersPage({
           <div>
             <p className="eyebrow">My orders</p>
             <h1>訂單記錄</h1>
-            <p>付款、收據同退款申請集中喺呢度。</p>
+            <p>付款狀態同正式收據集中喺呢度。</p>
           </div>
         </div>
-        {query.error && <div className="form-alert is-error">{query.error}</div>}
-        {query.success && (
+        {memberRefundsEnabled && query.error && (
+          <div className="form-alert is-error">{query.error}</div>
+        )}
+        {memberRefundsEnabled && query.success && (
           <div className="form-alert is-success">
             {query.success === "refund_requested"
               ? "退款申請已送出，職員會盡快審批。"
@@ -143,7 +146,9 @@ export default async function MemberOrdersPage({
                           <Download size={13} aria-hidden />
                           查看收據
                         </Link>
-                        {order.status === "paid" && order.isLive && (
+                        {memberRefundsEnabled &&
+                          order.status === "paid" &&
+                          order.isLive && (
                           <details className="inline-action-details">
                             <summary className="table-action">申請退款</summary>
                             <form action={requestRefund} className="inline-action-form">
@@ -159,7 +164,7 @@ export default async function MemberOrdersPage({
                               </button>
                             </form>
                           </details>
-                        )}
+                          )}
                       </div>
                     </td>
                   </tr>

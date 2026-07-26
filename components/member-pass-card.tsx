@@ -15,7 +15,7 @@ export function MemberPassCard({
     <div className="member-pass">
       <div className="member-pass-top">
         <span>LEGENDX CLASS PASS</span>
-        <small>DEMO · SIGNED QR</small>
+        <small>SECURE · SIGNED QR</small>
       </div>
       <div className="member-pass-body">
         <div className="pass-qr">

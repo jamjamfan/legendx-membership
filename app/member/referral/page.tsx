@@ -2,6 +2,7 @@ import { ExternalLink, Eye, MessageSquareText, Users } from "lucide-react";
 import { redirect } from "next/navigation";
 import { CopyButton } from "@/components/copy-button";
 import { PortalShell } from "@/components/portal-shell";
+import { ReferralQrCard } from "@/components/referral-qr-card";
 import { StatusBadge } from "@/components/status-badge";
 import { getCurrentMember } from "@/lib/data/current-member";
 import { demoRebates } from "@/lib/demo-data";
@@ -147,16 +148,22 @@ export default async function MemberReferralPage() {
             <strong>{member.referralCode}</strong>
             <p>{promoUrl}</p>
           </div>
-          <div className="referral-slots">
-            {Array.from({ length: totalSlots }).map((_, index) => (
-              <span
-                className={`slot-token ${index < usedSlots ? "is-used" : ""}`}
-                key={index}
-              >
-                {String(index + 1).padStart(2, "0")}
-              </span>
-            ))}
-            <small>{slotLabel} · 尚餘 {remainingSlots} 個</small>
+          <div className="referral-hero-tools">
+            <ReferralQrCard
+              code={member.referralCode}
+              url={promoUrl}
+            />
+            <div className="referral-slots">
+              {Array.from({ length: totalSlots }).map((_, index) => (
+                <span
+                  className={`slot-token ${index < usedSlots ? "is-used" : ""}`}
+                  key={index}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              ))}
+              <small>{slotLabel} · 尚餘 {remainingSlots} 個</small>
+            </div>
           </div>
         </section>
 

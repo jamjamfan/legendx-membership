@@ -50,8 +50,10 @@ export default async function AdminCheckInPage({
         <div className="portal-heading">
           <div>
             <p className="eyebrow">Secure attendance</p>
-            <h1>掃碼簽到</h1>
-            <p>{sessionTitle} · 每位學員每堂只可成功一次。</p>
+            <h1>掃碼記錄出席</h1>
+            <p>
+              {sessionTitle} · 用手機或電腦瀏覽器開啟本頁，先揀入場或離場，再掃學員通行證。
+            </p>
           </div>
         </div>
         <CheckInScanner lessonId={lessonId} lessonTitle={lessonTitle} />

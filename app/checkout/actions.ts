@@ -82,10 +82,12 @@ export async function createCheckoutOrder(
           ? "所選場次已停止報名"
           : error?.message.includes("invalid_referral")
             ? "介紹碼無效，請檢查後再試"
-            : error?.message.includes("self_referral")
-              ? "唔可以使用自己嘅介紹碼"
-              : error?.message.includes("stage_two_required")
-                ? "完成第二階段後先可以報讀第三階段"
+          : error?.message.includes("self_referral")
+            ? "唔可以使用自己嘅介紹碼"
+            : error?.message.includes("stage_one_required")
+              ? "完成第一階段後先可以報讀第二階段"
+            : error?.message.includes("stage_two_required")
+              ? "完成第二階段後先可以報讀第三階段"
                 : error?.message.includes("active_order_exists") ||
                     error?.code === "23505"
                   ? "你已有同階段有效訂單"
