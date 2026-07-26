@@ -2,6 +2,7 @@ import { DemoActionButton } from "@/components/demo-action-button";
 import { settleRebate } from "@/app/admin/actions";
 import { PortalShell } from "@/components/portal-shell";
 import { StatusBadge } from "@/components/status-badge";
+import { SubmitButton } from "@/components/submit-button";
 import { demoRebates } from "@/lib/demo-data";
 import { getRebateAttendanceStatus } from "@/lib/data/rebate-attendance";
 import { formatHkd } from "@/lib/domain/catalog";
@@ -181,9 +182,12 @@ export default async function AdminRebatesPage({
                         rebate.live && rebate.attendance.eligible ? (
                           <form action={settleRebate}>
                             <input name="rebateId" type="hidden" value={rebate.id} />
-                            <button className="table-action" type="submit">
+                            <SubmitButton
+                              className="table-action"
+                              pendingLabel="結算中…"
+                            >
                               標記已過數
-                            </button>
+                            </SubmitButton>
                           </form>
                         ) : !rebate.live ? (
                           <DemoActionButton

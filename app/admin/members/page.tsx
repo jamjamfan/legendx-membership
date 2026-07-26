@@ -2,6 +2,7 @@ import { Download, Search } from "lucide-react";
 import Link from "next/link";
 import { advanceMemberStage } from "@/app/admin/actions";
 import { PortalShell } from "@/components/portal-shell";
+import { SubmitButton } from "@/components/submit-button";
 import { getStaffContext } from "@/lib/auth/staff";
 import { formatHkd } from "@/lib/domain/catalog";
 import { isDemoMode } from "@/lib/runtime";
@@ -159,9 +160,12 @@ export default async function AdminMembersPage({
                             type="hidden"
                             value={member.completedStage + 1}
                           />
-                          <button className="table-action" type="submit">
+                          <SubmitButton
+                            className="table-action"
+                            pendingLabel="更新中…"
+                          >
                             測試完成第 {member.completedStage + 1} 階段
-                          </button>
+                          </SubmitButton>
                         </form>
                       ) : (
                         <span className="status-badge status-neutral">
